@@ -1,6 +1,5 @@
-// script.js
 import { db } from './firebase-config.js';
-import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
 
 // Thêm học sinh mới
 document.getElementById('addStudentButton').addEventListener('click', async () => {
@@ -23,27 +22,34 @@ document.getElementById('addStudentButton').addEventListener('click', async () =
 });
 
 // Đề xuất tên học sinh khi nhập
-document.getElementById('studentName').addEventListener('input', async () => {
+async function suggestStudents() {
     const input = document.getElementById('studentName').value.toLowerCase();
     const suggestionsList = document.getElementById('suggestions');
     suggestionsList.innerHTML = '';
 
     if (input.length > 1) {
-        const studentsSnapshot = await getDocs(collection(db, "students"));
-        studentsSnapshot.forEach((doc) => {
-            const studentName = doc.data().name.toLowerCase();
-            if (studentName.includes(input)) {
-                const listItem = document.createElement('li');
-                listItem.textContent = doc.data().name;
-                listItem.addEventListener('click', () => {
-                    document.getElementById('studentName').value = doc.data().name;
-                    suggestionsList.innerHTML = '';
-                });
-                suggestionsList.appendChild(listItem);
-            }
-        });
+        try {
+            const studentsSnapshot = await getDocs(collection(db, "students"));
+            studentsSnapshot.forEach((doc) => {
+                const studentName = doc.data().name.toLowerCase();
+                if (studentName.includes(input)) {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = doc.data().name;
+                    listItem.addEventListener('click', () => {
+                        document.getElementById('studentName').value = doc.data().name;
+                        suggestionsList.innerHTML = '';
+                    });
+                    suggestionsList.appendChild(listItem);
+                }
+            });
+        } catch (error) {
+            console.error("Lỗi khi truy vấn học sinh: ", error);
+        }
     }
-});
+}
+
+// Gắn sự kiện input vào trường tên học sinh
+document.getElementById('studentName').addEventListener('input', suggestStudents);
 
 // Điểm danh học sinh
 document.getElementById('markAttendanceButton').addEventListener('click', async () => {
@@ -75,17 +81,21 @@ document.getElementById('queryAttendanceButton').addEventListener('click', async
     resultsList.innerHTML = '';
 
     if (name) {
-        const q = query(collection(db, "attendance"), where("name", "==", name));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const attendanceDate = new Date(data.date);
-            if (attendanceDate >= startDate && attendanceDate <= endDate) {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${data.name} - ${data.classes.join(", ")} - ${attendanceDate.toLocaleDateString()}`;
-                resultsList.appendChild(listItem);
-            }
-        });
+        try {
+            const q = query(collection(db, "attendance"), where("name", "==", name));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const attendanceDate = new Date(data.date);
+                if (attendanceDate >= startDate && attendanceDate <= endDate) {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${data.name} - ${data.classes.join(", ")} - ${attendanceDate.toLocaleDateString()}`;
+                    resultsList.appendChild(listItem);
+                }
+            });
+        } catch (error) {
+            console.error("Lỗi khi truy vấn điểm danh: ", error);
+        }
     } else {
         alert('Vui lòng nhập tên học sinh để truy vấn');
     }
