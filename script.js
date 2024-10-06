@@ -1,102 +1,113 @@
-import { db } from './firebase-config.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+import { db } from "./firebase-config.js";
+import {
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-// Thêm học sinh mới
-document.getElementById('addStudentButton').addEventListener('click', async () => {
-    const name = document.getElementById('newStudentName').value;
-    const selectedClasses = Array.from(document.querySelectorAll('#newStudentClasses input:checked')).map(cb => cb.value);
+const studentCollection = collection(db, "students");
+const attendanceCollection = collection(db, "attendance");
 
-    if (name && selectedClasses.length > 0) {
-        try {
-            await addDoc(collection(db, "students"), {
-                name: name,
-                classes: selectedClasses
-            });
-            alert('Thêm học sinh thành công');
-        } catch (error) {
-            console.error("Lỗi khi thêm học sinh: ", error);
-        }
+async function addNewStudent() {
+    const studentName = document.getElementById("newStudentName").value;
+    const selectedSubjects = Array.from(document.querySelectorAll('#subjectOptions input:checked')).map(input => input.value);
+
+    if (studentName && selectedSubjects.length > 0) {
+        await addDoc(studentCollection, {
+            name: studentName,
+            classes: selectedSubjects
+        });
+        alert("Học sinh đã được thêm thành công!");
     } else {
-        alert('Vui lòng nhập tên học sinh và chọn ít nhất một môn học');
-    }
-});
-
-// Đề xuất tên học sinh khi nhập
-async function suggestStudents() {
-    const input = document.getElementById('studentName').value.toLowerCase();
-    const suggestionsList = document.getElementById('suggestions');
-    suggestionsList.innerHTML = '';
-
-    if (input.length > 1) {
-        try {
-            const studentsSnapshot = await getDocs(collection(db, "students"));
-            studentsSnapshot.forEach((doc) => {
-                const studentName = doc.data().name.toLowerCase();
-                if (studentName.includes(input)) {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = doc.data().name;
-                    listItem.addEventListener('click', () => {
-                        document.getElementById('studentName').value = doc.data().name;
-                        suggestionsList.innerHTML = '';
-                    });
-                    suggestionsList.appendChild(listItem);
-                }
-            });
-        } catch (error) {
-            console.error("Lỗi khi truy vấn học sinh: ", error);
-        }
+        alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
     }
 }
 
-// Gắn sự kiện input vào trường tên học sinh
-document.getElementById('studentName').addEventListener('input', suggestStudents);
+async function suggestStudents() {
+    const input = document.getElementById("studentName").value.toLowerCase();
+    const suggestionsList = document.getElementById("suggestions");
 
-// Điểm danh học sinh
-document.getElementById('markAttendanceButton').addEventListener('click', async () => {
-    const name = document.getElementById('studentName').value;
-    const selectedClasses = Array.from(document.querySelectorAll('#courseSelect input:checked')).map(cb => cb.value);
-
-    if (name && selectedClasses.length > 0) {
-        try {
-            await addDoc(collection(db, "attendance"), {
-                name: name,
-                classes: selectedClasses,
-                date: new Date().toISOString()
-            });
-            alert('Điểm danh thành công');
-        } catch (error) {
-            console.error("Lỗi khi điểm danh: ", error);
-        }
+    if (input) {
+        const querySnapshot = await getDocs(studentCollection);
+        suggestionsList.innerHTML = "";
+        querySnapshot.forEach(doc => {
+            const studentName = doc.data().name.toLowerCase();
+            if (studentName.includes(input)) {
+                const li = document.createElement("li");
+                li.textContent = doc.data().name;
+                li.onclick = () => {
+                    document.getElementById("studentName").value = doc.data().name;
+                    suggestionsList.innerHTML = "";
+                };
+                suggestionsList.appendChild(li);
+            }
+        });
     } else {
-        alert('Vui lòng nhập tên học sinh và chọn ít nhất một môn học');
+        suggestionsList.innerHTML = "";
     }
-});
+}
 
-// Truy vấn lịch sử điểm danh
-document.getElementById('queryAttendanceButton').addEventListener('click', async () => {
-    const name = document.getElementById('queryName').value;
-    const startDate = new Date(document.getElementById('startDate').value);
-    const endDate = new Date(document.getElementById('endDate').value);
-    const resultsList = document.getElementById('attendanceRecords');
-    resultsList.innerHTML = '';
+async function markAttendance() {
+    const studentName = document.getElementById("studentName").value;
 
-    if (name) {
-        try {
-            const q = query(collection(db, "attendance"), where("name", "==", name));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const attendanceDate = new Date(data.date);
-                if (attendanceDate >= startDate && attendanceDate <= endDate) {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `${data.name} - ${data.classes.join(", ")} - ${attendanceDate.toLocaleDateString()}`;
-                    resultsList.appendChild(listItem);
-                }
-            });
-        } catch (error) {
-            console.error("Lỗi khi truy vấn điểm danh: ", error);
-        }
+    if (studentName) {
+        await addDoc(attendanceCollection, {
+            name: studentName,
+            timestamp: serverTimestamp()
+        });
+        alert("Điểm danh thành công!");
     } else {
-        alert('Vui lòng nhập tên học sinh để truy vấn');
+        alert("Vui lòng nhập tên học sinh.");
     }
-});
+}
+
+async function suggestStudentsForQuery() {
+    const input = document.getElementById("queryName").value.toLowerCase();
+    const suggestionsList = document.getElementById("querySuggestions");
+
+    if (input) {
+        const querySnapshot = await getDocs(studentCollection);
+        suggestionsList.innerHTML = "";
+        querySnapshot.forEach(doc => {
+            const studentName = doc.data().name.toLowerCase();
+            if (studentName.includes(input)) {
+                const li = document.createElement("li");
+                li.textContent = doc.data().name;
+                li.onclick = () => {
+                    document.getElementById("queryName").value = doc.data().name;
+                    suggestionsList.innerHTML = "";
+                };
+                suggestionsList.appendChild(li);
+            }
+        });
+    } else {
+        suggestionsList.innerHTML = "";
+    }
+}
+
+async function queryAttendance() {
+    const studentName = document.getElementById("queryName").value.toLowerCase();
+    const startDate = new Date(document.getElementById("startDate").value);
+    const endDate = new Date(document.getElementById("endDate").value);
+    const attendanceRecords = document.getElementById("attendanceRecords");
+
+    if (studentName && !isNaN(startDate) && !isNaN(endDate)) {
+        const querySnapshot = await getDocs(attendanceCollection);
+        attendanceRecords.innerHTML = "";
+
+        querySnapshot.forEach(doc => {
+            const record = doc.data();
+            const timestamp = record.timestamp.toDate();
+            if (record.name.toLowerCase() === studentName && timestamp >= startDate && timestamp <= endDate) {
+                const li = document.createElement("li");
+                li.textContent = `${record.name} - ${timestamp.toLocaleString()}`;
+                attendanceRecords.appendChild(li);
+            }
+        });
+    } else {
+        alert("Vui lòng nhập tên học sinh và chọn khoảng thời gian hợp lệ.");
+    }
+}
