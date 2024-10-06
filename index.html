@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
-    <script src="script.js" defer></script>
 </head>
 
 <body>
@@ -29,29 +28,29 @@
                 <input type="checkbox" name="course" value="Vẽ"> Vẽ
                 <input type="checkbox" name="course" value="MC"> MC
             </div>
-            <button onclick="addNewStudent()">Thêm Học Sinh</button>
+            <button id="addStudentButton">Thêm Học Sinh</button>
         </div>
 
         <!-- Form Điểm Danh -->
         <div class="input-field">
             <h2>Điểm Danh Học Sinh</h2>
             <label for="attendanceName">Tên Học Sinh:</label>
-            <input type="text" id="attendanceName" oninput="suggestStudents('attendanceName', 'attendanceSuggestions')" placeholder="Nhập tên học sinh">
+            <input type="text" id="attendanceName" placeholder="Nhập tên học sinh">
             <ul id="attendanceSuggestions"></ul>
-            <button onclick="markAttendance()">Điểm Danh</button>
+            <button id="markAttendanceButton">Điểm Danh</button>
         </div>
 
         <!-- Form Truy Vấn Điểm Danh -->
         <div class="input-field">
             <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
             <label for="queryName">Tìm Kiếm Tên Học Sinh:</label>
-            <input type="text" id="queryName" oninput="suggestStudents('queryName', 'querySuggestions')" placeholder="Nhập tên học sinh">
+            <input type="text" id="queryName" placeholder="Nhập tên học sinh">
             <ul id="querySuggestions"></ul>
             <label for="startDate">Ngày Bắt Đầu:</label>
             <input type="date" id="startDate">
             <label for="endDate">Ngày Kết Thúc:</label>
             <input type="date" id="endDate">
-            <button onclick="queryAttendance()">Truy Vấn Điểm Danh</button>
+            <button id="queryAttendanceButton">Truy Vấn Điểm Danh</button>
         </div>
 
         <!-- Kết Quả Truy Vấn -->
@@ -60,6 +59,8 @@
             <ul id="attendanceRecords"></ul>
         </div>
     </div>
+
+    <script src="script.js" defer></script>
 </body>
 
 </html>
