@@ -1,16 +1,19 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
+    background-color: #f9f9f9;
     color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 #container {
-    max-width: 600px;
-    margin: 50px auto;
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto;
     padding: 20px;
-    background-color: #fff;
+    background: #fff;
     border-radius: 8px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
@@ -18,43 +21,59 @@ h1 {
     color: #007bff;
 }
 
-h2 {
-    margin-bottom: 10px;
-    color: #007bff;
-}
-
 .input-field {
     margin-bottom: 20px;
 }
 
+label {
+    font-weight: bold;
+}
+
 input[type="text"], input[type="date"] {
     width: calc(100% - 10px);
-    padding: 8px;
-    margin-top: 5px;
-    margin-bottom: 10px;
+    padding: 10px;
+    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.checkbox-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+#subjectOptions {
+    margin: 10px 0;
 }
 
-.checkbox-list label {
-    margin-right: 15px;
+#subjectOptions input {
+    margin-right: 10px;
 }
 
 button {
     background-color: #007bff;
     color: #fff;
+    padding: 10px;
     border: none;
-    padding: 10px 15px;
     border-radius: 4px;
     cursor: pointer;
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul#suggestions, ul#querySuggestions {
+    border: 1px solid #ccc;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+ul li {
+    padding: 5px;
+    cursor: pointer;
+}
+
+ul li:hover {
+    background-color: #f0f0f0;
 }
