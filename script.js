@@ -1,99 +1,65 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+import { db } from "./firebase-config.js";
+import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-// Cấu hình Firebase của bạn
-const firebaseConfig = {
-    apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
-    authDomain: "kidstars-7434d.firebaseapp.com",
-    projectId: "kidstars-7434d",
-    storageBucket: "kidstars-7434d.appspot.com",
-    messagingSenderId: "616350873520",
-    appId: "1:616350873520:web:9d765d0bf5a483fa964875",
-    measurementId: "G-FJMK0F1LRN"
-};
+// Thêm học sinh mới
+document.getElementById("addStudentButton").addEventListener("click", async () => {
+    const name = document.getElementById("newStudentName").value;
+    const selectedClasses = Array.from(document.querySelectorAll('#classesSelection input[type="checkbox"]:checked'))
+        .map(el => el.value);
 
-// Khởi tạo Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Đảm bảo DOM đã sẵn sàng trước khi chạy mã JavaScript
-document.addEventListener('DOMContentLoaded', () => {
-    // Thêm học sinh mới
-    document.getElementById("addStudentButton").addEventListener("click", async () => {
-        const name = document.getElementById("newStudentName").value;
-        const selectedClasses = Array.from(document.querySelectorAll('#classesSelection input[type="checkbox"]:checked'))
-            .map(el => el.value);
-
-        if (name && selectedClasses.length > 0) {
-            try {
-                await addDoc(collection(db, "students"), {
-                    name: name,
-                    classes: selectedClasses
-                });
-                alert("Học sinh đã được thêm thành công!");
-            } catch (e) {
-                console.error("Lỗi khi thêm học sinh: ", e);
-            }
-        } else {
-            alert("Vui lòng nhập tên và chọn ít nhất một môn học.");
+    if (name && selectedClasses.length > 0) {
+        try {
+            await addDoc(collection(db, "students"), {
+                name: name,
+                classes: selectedClasses
+            });
+            alert("Học sinh đã được thêm thành công!");
+        } catch (e) {
+            console.error("Lỗi khi thêm học sinh: ", e);
         }
-    });
+    } else {
+        alert("Vui lòng nhập tên và chọn ít nhất một môn học.");
+    }
+});
 
-    // Điểm danh học sinh
-    document.getElementById("markAttendanceButton").addEventListener("click", async () => {
-        const name = document.getElementById("attendanceStudentName").value;
+// Điểm danh học sinh
+document.getElementById("markAttendanceButton").addEventListener("click", async () => {
+    const name = document.getElementById("attendanceStudentName").value;
 
-        if (name) {
-            try {
-                const studentsQuery = query(collection(db, "students"), where("name", "==", name));
-                const querySnapshot = await getDocs(studentsQuery);
-
-                if (!querySnapshot.empty) {
-                    await addDoc(collection(db, "attendance"), {
-                        name: name,
-                        date: new Date().toISOString()
-                    });
-                    alert("Điểm danh thành công!");
-                } else {
-                    alert("Không tìm thấy học sinh.");
-                }
-            } catch (e) {
-                console.error("Lỗi khi điểm danh: ", e);
-            }
-        } else {
-            alert("Vui lòng nhập tên học sinh để điểm danh.");
+    if (name) {
+        try {
+            await addDoc(collection(db, "attendance"), {
+                name: name,
+                date: new Date().toISOString()
+            });
+            alert("Điểm danh thành công cho học sinh!");
+        } catch (e) {
+            console.error("Lỗi khi điểm danh: ", e);
         }
-    });
+    } else {
+        alert("Vui lòng nhập tên học sinh.");
+    }
+});
 
-    // Truy vấn lịch sử điểm danh
-    document.getElementById("queryAttendanceButton").addEventListener("click", queryAttendance);
+// Truy vấn lịch sử điểm danh
+document.getElementById("queryAttendanceButton").addEventListener("click", async () => {
+    const name = document.getElementById("queryStudentName").value;
 
-    async function queryAttendance() {
-        const name = document.getElementById("queryStudentName").value;
+    if (name) {
+        try {
+            const q = query(collection(db, "attendance"), where("name", "==", name));
+            const querySnapshot = await getDocs(q);
 
-        if (name) {
-            try {
-                const attendanceQuery = query(collection(db, "attendance"), where("name", "==", name));
-                const querySnapshot = await getDocs(attendanceQuery);
+            let resultHTML = `<h3>Kết quả truy vấn cho học sinh: ${name}</h3>`;
+            querySnapshot.forEach((doc) => {
+                resultHTML += `<p>Ngày điểm danh: ${doc.data().date}</p>`;
+            });
 
-                const resultDiv = document.getElementById("attendanceResult");
-                resultDiv.innerHTML = "";  // Xóa các kết quả trước đó
-
-                if (!querySnapshot.empty) {
-                    querySnapshot.forEach((doc) => {
-                        const attendance = doc.data();
-                        const div = document.createElement("div");
-                        div.textContent = `Học sinh: ${attendance.name}, Ngày: ${new Date(attendance.date).toLocaleDateString()}`;
-                        resultDiv.appendChild(div);
-                    });
-                } else {
-                    resultDiv.innerHTML = "Không có kết quả.";
-                }
-            } catch (e) {
-                console.error("Lỗi khi truy vấn điểm danh: ", e);
-            }
-        } else {
-            alert("Vui lòng nhập tên học sinh để truy vấn.");
+            document.getElementById("attendanceResult").innerHTML = resultHTML;
+        } catch (e) {
+            console.error("Lỗi khi truy vấn lịch sử điểm danh: ", e);
         }
+    } else {
+        alert("Vui lòng nhập tên học sinh để truy vấn.");
     }
 });
