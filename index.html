@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Công Cụ Điểm Danh Học Sinh</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase SDK -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js"></script>
-    <script type="module" src="firebase-config.js" defer></script>
-    <script type="module" src="script.js" defer></script>
 </head>
-<body>
-    <div id="container">
-        <h1>Công Cụ Điểm Danh Học Sinh</h1>
 
-        <!-- Thêm Học Sinh Mới -->
-        <div class="input-field">
-            <label for="newStudentName">Tên Học Sinh Mới:</label>
+<body>
+    <div class="container">
+        <h1>Công Cụ Điểm Danh Học Sinh</h1>
+        
+        <div class="form-section">
+            <h2>Thêm Học Sinh Mới</h2>
             <input type="text" id="newStudentName" placeholder="Nhập tên học sinh">
-            <div id="subjectOptions">
+            <div id="classesSelection">
                 <label><input type="checkbox" value="Piano"> Piano</label>
                 <label><input type="checkbox" value="Guitar"> Guitar</label>
                 <label><input type="checkbox" value="Nhảy"> Nhảy</label>
@@ -27,34 +23,27 @@
                 <label><input type="checkbox" value="Vẽ"> Vẽ</label>
                 <label><input type="checkbox" value="MC"> MC</label>
             </div>
-            <button id="addStudentButton">Thêm Học Sinh</button>
+            <button onclick="addNewStudent()">Thêm Học Sinh</button>
         </div>
 
-        <!-- Điểm Danh Học Sinh -->
-        <div class="input-field">
-            <label for="studentName">Tên Học Sinh:</label>
-            <input type="text" id="studentName" oninput="suggestStudents()" placeholder="Nhập tên học sinh">
-            <ul id="suggestions"></ul>
-            <button id="markAttendanceButton">Điểm Danh</button>
+        <div class="form-section">
+            <h2>Điểm Danh Học Sinh</h2>
+            <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh" oninput="suggestStudents('attendanceStudentName')">
+            <button onclick="markAttendance()">Điểm Danh</button>
         </div>
 
-        <!-- Truy Vấn Lịch Sử Điểm Danh -->
-        <div class="input-field">
-            <label for="queryName">Tìm Kiếm Tên Học Sinh:</label>
-            <input type="text" id="queryName" oninput="suggestStudentsForQuery()" placeholder="Nhập tên học sinh">
-            <ul id="querySuggestions"></ul>
-            <label for="startDate">Ngày Bắt Đầu:</label>
+        <div class="form-section">
+            <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
+            <input type="text" id="queryStudentName" placeholder="Tìm Kiếm Tên Học Sinh" oninput="suggestStudents('queryStudentName')">
             <input type="date" id="startDate">
-            <label for="endDate">Ngày Kết Thúc:</label>
             <input type="date" id="endDate">
-            <button id="queryAttendanceButton">Truy Vấn Điểm Danh</button>
-        </div>
-
-        <!-- Kết Quả Truy Vấn -->
-        <div id="queryResults">
-            <h3>Kết Quả Điểm Danh:</h3>
-            <ul id="attendanceRecords"></ul>
+            <button onclick="queryAttendance()">Truy Vấn Điểm Danh</button>
+            <div id="attendanceResults"></div>
         </div>
     </div>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
+
 </html>
