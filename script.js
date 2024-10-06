@@ -1,127 +1,43 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
-        authDomain: "kidstars-7434d.firebaseapp.com",
-        projectId: "kidstars-7434d",
-        storageBucket: "kidstars-7434d.appspot.com",
-        messagingSenderId: "616350873520",
-        appId: "1:616350873520:web:9d765d0bf5a483fa964875",
-        measurementId: "G-FJMK0F1LRN"
-    };
+import { db } from "./firebase-config.js";
+import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+// Thêm học sinh mới
+window.addNewStudent = async function () {
+    const name = document.getElementById("newStudentName").value;
+    const selectedClasses = Array.from(document.querySelectorAll('.input-field:nth-child(2) .checkbox-list input:checked')).map(input => input.value);
 
-    // Hàm thêm học sinh mới
-    async function addNewStudent() {
-        const studentName = document.getElementById("studentName").value;
-        const selectedCourses = Array.from(document.querySelectorAll('input[name="course"]:checked')).map(e => e.value);
-
-        if (studentName.trim() === "" || selectedCourses.length === 0) {
-            alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
-            return;
-        }
-
+    if (name && selectedClasses.length > 0) {
         try {
-            await db.collection("students").add({
-                name: studentName,
-                courses: selectedCourses
+            await addDoc(collection(db, "students"), {
+                name: name,
+                classes: selectedClasses
             });
-            alert("Học sinh đã được thêm thành công!");
-            document.getElementById("studentName").value = "";
-            document.querySelectorAll('input[name="course"]').forEach(e => e.checked = false);
+            alert("Thêm học sinh thành công!");
         } catch (e) {
             console.error("Lỗi khi thêm học sinh: ", e);
         }
+    } else {
+        alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
     }
+}
 
-    // Hàm gợi ý tên học sinh khi nhập
-    async function suggestStudents(inputId, suggestionBoxId) {
-        const input = document.getElementById(inputId).value.toLowerCase();
-        const suggestionBox = document.getElementById(suggestionBoxId);
-        suggestionBox.innerHTML = "";
+// Điểm danh học sinh
+window.markAttendance = async function () {
+    const name = document.getElementById("studentName").value;
+    const selectedClasses = Array.from(document.querySelectorAll('.input-field:nth-child(3) .checkbox-list input:checked')).map(input => input.value);
 
-        if (input.trim() === "") {
-            return;
-        }
-
+    if (name && selectedClasses.length > 0) {
         try {
-            const q = db.collection("students").where("name", ">=", input).where("name", "<=", input + "\uf8ff");
-            const querySnapshot = await q.get();
-
-            querySnapshot.forEach((doc) => {
-                const listItem = document.createElement("li");
-                listItem.textContent = doc.data().name;
-                listItem.onclick = () => {
-                    document.getElementById(inputId).value = doc.data().name;
-                    suggestionBox.innerHTML = "";
-                };
-                suggestionBox.appendChild(listItem);
-            });
-        } catch (e) {
-            console.error("Lỗi khi tìm kiếm học sinh: ", e);
-        }
-    }
-
-    // Hàm điểm danh học sinh
-    async function markAttendance() {
-        const studentName = document.getElementById("attendanceName").value;
-        if (studentName.trim() === "") {
-            alert("Vui lòng nhập tên học sinh.");
-            return;
-        }
-        try {
-            await db.collection("attendance").add({
-                name: studentName,
-                timestamp: new Date()
+            await addDoc(collection(db, "attendance"), {
+                name: name,
+                classes: selectedClasses,
+                date: new Date().toISOString().split('T')[0]
             });
             alert("Điểm danh thành công!");
-            document.getElementById("attendanceName").value = "";
         } catch (e) {
             console.error("Lỗi khi điểm danh: ", e);
         }
+    } else {
+        alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
     }
-
-    // Hàm truy vấn lịch sử điểm danh
-    async function queryAttendance() {
-        const studentName = document.getElementById("queryName").value;
-        const startDate = new Date(document.getElementById("startDate").value);
-        const endDate = new Date(document.getElementById("endDate").value);
-        endDate.setDate(endDate.getDate() + 1);
-
-        const attendanceRecords = document.getElementById("attendanceRecords");
-        attendanceRecords.innerHTML = "";
-
-        if (studentName.trim() === "") {
-            alert("Vui lòng nhập tên học sinh.");
-            return;
-        }
-
-        try {
-            const q = db.collection("attendance")
-                .where("name", "==", studentName)
-                .where("timestamp", ">=", startDate)
-                .where("timestamp", "<=", endDate);
-            const querySnapshot = await q.get();
-
-            querySnapshot.forEach((doc) => {
-                const listItem = document.createElement("li");
-                listItem.textContent = `Tên: ${doc.data().name}, Thời Gian: ${doc.data().timestamp.toDate()}`;
-                attendanceRecords.appendChild(listItem);
-            });
-        } catch (e) {
-            console.error("Lỗi khi truy vấn điểm danh: ", e);
-        }
-    }
-
-    // Gắn sự kiện cho các button
-    document.getElementById("addStudentButton").addEventListener("click", addNewStudent);
-    document.getElementById("markAttendanceButton").addEventListener("click", markAttendance);
-    document.getElementById("queryAttendanceButton").addEventListener("click", queryAttendance);
-
-    // Gắn sự kiện cho các input tìm kiếm để gợi ý tên học sinh
-    document.getElementById("attendanceName").addEventListener("input", () => suggestStudents('attendanceName', 'attendanceSuggestions'));
-    document.getElementById("queryName").addEventListener("input", () => suggestStudents('queryName', 'querySuggestions'));
-});
+}
