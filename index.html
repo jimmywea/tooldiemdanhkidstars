@@ -6,27 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Công Cụ Điểm Danh Học Sinh</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module" defer src="script.js"></script>
-    <!-- Firebase SDK từ CDN -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
-            authDomain: "kidstars-7434d.firebaseapp.com",
-            projectId: "kidstars-7434d",
-            storageBucket: "kidstars-7434d.appspot.com",
-            messagingSenderId: "616350873520",
-            appId: "1:616350873520:web:9d765d0bf5a483fa964875",
-            measurementId: "G-FJMK0F1LRN"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        export const db = getFirestore(app);
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+    <script src="script.js" defer></script>
 </head>
 
 <body>
