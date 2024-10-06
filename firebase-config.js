@@ -1,7 +1,7 @@
 // Firebase Configuration File
-// Initialize Firebase using the compat library
+// Sử dụng Firebase với Firebase từ CDN đã tải về
 
-// Your web app's Firebase configuration
+// Khởi tạo Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
     authDomain: "kidstars-7434d.firebaseapp.com",
@@ -12,6 +12,6 @@ const firebaseConfig = {
     measurementId: "G-FJMK0F1LRN"
 };
 
-// Initialize Firebase
+// Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
