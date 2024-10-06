@@ -3,7 +3,7 @@ import { db } from './firebase-config.js';
 import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
 
 // Thêm học sinh mới
-export async function addNewStudent() {
+document.getElementById('addStudentButton').addEventListener('click', async () => {
     const name = document.getElementById('newStudentName').value;
     const selectedClasses = Array.from(document.querySelectorAll('#newStudentClasses input:checked')).map(cb => cb.value);
 
@@ -20,10 +20,10 @@ export async function addNewStudent() {
     } else {
         alert('Vui lòng nhập tên học sinh và chọn ít nhất một môn học');
     }
-}
+});
 
-// Đề xuất tên học sinh
-export async function suggestStudents() {
+// Đề xuất tên học sinh khi nhập
+document.getElementById('studentName').addEventListener('input', async () => {
     const input = document.getElementById('studentName').value.toLowerCase();
     const suggestionsList = document.getElementById('suggestions');
     suggestionsList.innerHTML = '';
@@ -35,18 +35,18 @@ export async function suggestStudents() {
             if (studentName.includes(input)) {
                 const listItem = document.createElement('li');
                 listItem.textContent = doc.data().name;
-                listItem.onclick = () => {
+                listItem.addEventListener('click', () => {
                     document.getElementById('studentName').value = doc.data().name;
                     suggestionsList.innerHTML = '';
-                };
+                });
                 suggestionsList.appendChild(listItem);
             }
         });
     }
-}
+});
 
 // Điểm danh học sinh
-export async function markAttendance() {
+document.getElementById('markAttendanceButton').addEventListener('click', async () => {
     const name = document.getElementById('studentName').value;
     const selectedClasses = Array.from(document.querySelectorAll('#courseSelect input:checked')).map(cb => cb.value);
 
@@ -64,10 +64,10 @@ export async function markAttendance() {
     } else {
         alert('Vui lòng nhập tên học sinh và chọn ít nhất một môn học');
     }
-}
+});
 
 // Truy vấn lịch sử điểm danh
-export async function queryAttendance() {
+document.getElementById('queryAttendanceButton').addEventListener('click', async () => {
     const name = document.getElementById('queryName').value;
     const startDate = new Date(document.getElementById('startDate').value);
     const endDate = new Date(document.getElementById('endDate').value);
@@ -89,4 +89,4 @@ export async function queryAttendance() {
     } else {
         alert('Vui lòng nhập tên học sinh để truy vấn');
     }
-}
+});
