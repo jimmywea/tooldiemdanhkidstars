@@ -1,26 +1,25 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Công Cụ Điểm Danh Học Sinh</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module" src="firebase-config.js" defer></script>
-    <script type="module" src="script.js" defer></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="script.js"></script>
 </head>
-
 <body>
     <div id="container">
         <h1>Công Cụ Điểm Danh Học Sinh</h1>
 
-        <!-- Thêm Học Sinh -->
+        <!-- Thêm Học Sinh Mới -->
         <div class="input-field">
             <h2>Thêm Học Sinh Mới</h2>
             <label for="newStudentName">Tên Học Sinh Mới:</label>
             <input type="text" id="newStudentName" placeholder="Nhập tên học sinh">
-            <label>Chọn Môn Học:</label>
-            <div class="checkbox-list">
+            <label for="newStudentClasses">Chọn Môn Học:</label>
+            <div id="newStudentClasses">
                 <label><input type="checkbox" value="Piano"> Piano</label>
                 <label><input type="checkbox" value="Guitar"> Guitar</label>
                 <label><input type="checkbox" value="Nhảy"> Nhảy</label>
@@ -31,13 +30,14 @@
             <button onclick="addNewStudent()">Thêm Học Sinh</button>
         </div>
 
-        <!-- Điểm Danh -->
+        <!-- Điểm Danh Học Sinh -->
         <div class="input-field">
             <h2>Điểm Danh Học Sinh</h2>
             <label for="studentName">Tên Học Sinh:</label>
             <input type="text" id="studentName" oninput="suggestStudents()" placeholder="Nhập tên học sinh">
-            <label>Chọn Môn Học:</label>
-            <div class="checkbox-list">
+            <ul id="suggestions"></ul>
+            <label for="courseSelect">Chọn Môn Học:</label>
+            <div id="courseSelect">
                 <label><input type="checkbox" value="Piano"> Piano</label>
                 <label><input type="checkbox" value="Guitar"> Guitar</label>
                 <label><input type="checkbox" value="Nhảy"> Nhảy</label>
@@ -48,11 +48,12 @@
             <button onclick="markAttendance()">Điểm Danh</button>
         </div>
 
-        <!-- Truy Vấn Điểm Danh -->
+        <!-- Truy Vấn Lịch Sử Điểm Danh -->
         <div class="input-field">
             <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
             <label for="queryName">Tìm Kiếm Tên Học Sinh:</label>
             <input type="text" id="queryName" oninput="suggestStudentsForQuery()" placeholder="Nhập tên học sinh">
+            <ul id="querySuggestions"></ul>
             <label for="startDate">Ngày Bắt Đầu:</label>
             <input type="date" id="startDate">
             <label for="endDate">Ngày Kết Thúc:</label>
@@ -67,5 +68,4 @@
         </div>
     </div>
 </body>
-
 </html>
