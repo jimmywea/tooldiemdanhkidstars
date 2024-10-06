@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Công Cụ Điểm Danh Học Sinh</title>
+    <!-- Đảm bảo đường dẫn đúng tới tệp CSS -->
     <link rel="stylesheet" href="style.css">
     <script type="module" src="script.js" defer></script>
 </head>
@@ -15,7 +16,8 @@
 
         <div class="section">
             <h2>Thêm Học Sinh Mới</h2>
-            <input type="text" id="newStudentName" placeholder="Nhập tên học sinh">
+            <label for="newStudentName">Nhập tên học sinh:</label>
+            <input type="text" id="newStudentName" name="newStudentName" placeholder="Nhập tên học sinh">
             <div id="classesSelection">
                 <label><input type="checkbox" value="Piano"> Piano</label>
                 <label><input type="checkbox" value="Guitar"> Guitar</label>
@@ -29,13 +31,15 @@
 
         <div class="section">
             <h2>Điểm Danh Học Sinh</h2>
-            <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
+            <label for="attendanceStudentName">Nhập tên học sinh để điểm danh:</label>
+            <input type="text" id="attendanceStudentName" name="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
             <button id="markAttendanceButton">Điểm Danh</button>
         </div>
 
         <div class="section">
             <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
-            <input type="text" id="queryStudentName" placeholder="Tìm kiếm tên học sinh">
+            <label for="queryStudentName">Tìm kiếm tên học sinh:</label>
+            <input type="text" id="queryStudentName" name="queryStudentName" placeholder="Tìm kiếm tên học sinh">
             <button id="queryAttendanceButton">Truy Vấn</button>
             <div id="attendanceResult"></div>
         </div>
