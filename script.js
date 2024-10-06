@@ -1,80 +1,131 @@
-import { db } from './firebase-config.js';
-import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js";
+// JavaScript Functionality
 
 // Thêm học sinh mới
-async function addNewStudent() {
-    const studentName = document.getElementById('newStudentName').value;
-    const selectedCourses = [];
-    document.querySelectorAll('#newStudentCourses input[type="checkbox"]:checked').forEach((checkbox) => {
-        selectedCourses.push(checkbox.value);
-    });
+function addNewStudent() {
+    const studentName = document.getElementById("newStudentName").value.trim();
+    const courses = Array.from(document.querySelectorAll("#newCourses input:checked")).map(input => input.value);
 
-    if (studentName === "" || selectedCourses.length === 0) {
-        alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học!");
+    if (studentName === "" || courses.length === 0) {
+        alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
         return;
     }
 
-    try {
-        await addDoc(collection(db, "students"), {
-            name: studentName,
-            classes: selectedCourses
-        });
-        alert('Thêm học sinh thành công!');
-    } catch (e) {
-        console.error("Error adding document: ", e);
-    }
+    db.collection("students").add({
+        name: studentName,
+        classes: courses
+    })
+    .then(() => {
+        alert("Thêm học sinh thành công!");
+        document.getElementById("newStudentName").value = "";
+        document.querySelectorAll("#newCourses input:checked").forEach(input => input.checked = false);
+    })
+    .catch(error => {
+        console.error("Error adding student: ", error);
+    });
 }
 
-// Gợi ý tên học sinh khi điểm danh
-async function suggestStudents() {
-    const studentInput = document.getElementById('studentName').value.toLowerCase();
-    const suggestionsList = document.getElementById('suggestions');
+// Gợi ý tên học sinh
+function suggestStudents() {
+    const input = document.getElementById("studentName").value.trim().toLowerCase();
+    const suggestionsList = document.getElementById("suggestions");
     suggestionsList.innerHTML = "";
 
-    if (studentInput.length < 2) return; // Bắt đầu gợi ý khi nhập từ 2 ký tự trở lên
-
-    try {
-        const querySnapshot = await getDocs(collection(db, "students"));
-        querySnapshot.forEach((doc) => {
-            const studentName = doc.data().name;
-            if (studentName.toLowerCase().includes(studentInput)) {
-                const li = document.createElement('li');
-                li.textContent = studentName;
-                li.onclick = () => {
-                    document.getElementById('studentName').value = studentName;
-                    suggestionsList.innerHTML = "";
-                };
-                suggestionsList.appendChild(li);
-            }
+    if (input.length > 0) {
+        db.collection("students").get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                const student = doc.data();
+                if (student.name.toLowerCase().includes(input)) {
+                    const li = document.createElement("li");
+                    li.textContent = student.name;
+                    li.onclick = function () {
+                        document.getElementById("studentName").value = student.name;
+                        suggestionsList.innerHTML = "";
+                    };
+                    suggestionsList.appendChild(li);
+                }
+            });
         });
-    } catch (e) {
-        console.error("Error getting documents: ", e);
     }
 }
 
 // Điểm danh học sinh
-async function markAttendance() {
-    const studentName = document.getElementById('studentName').value;
-    const selectedCourses = [];
-    document.querySelectorAll('#courseSelect input[type="checkbox"]:checked').forEach((checkbox) => {
-        selectedCourses.push(checkbox.value);
-    });
+function markAttendance() {
+    const studentName = document.getElementById("studentName").value.trim();
+    const courses = Array.from(document.querySelectorAll("#attendanceCourses input:checked")).map(input => input.value);
 
-    if (studentName === "" || selectedCourses.length === 0) {
-        alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học!");
+    if (studentName === "" || courses.length === 0) {
+        alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
         return;
     }
 
-    try {
-        await addDoc(collection(db, "attendance"), {
-            name: studentName,
-            courses: selectedCourses,
-            timestamp: new Date()
+    db.collection("attendance").add({
+        name: studentName,
+        classes: courses,
+        date: new Date().toISOString().split("T")[0]
+    })
+    .then(() => {
+        alert("Điểm danh thành công!");
+        document.getElementById("studentName").value = "";
+        document.querySelectorAll("#attendanceCourses input:checked").forEach(input => input.checked = false);
+    })
+    .catch(error => {
+        console.error("Error marking attendance: ", error);
+    });
+}
+
+// Gợi ý tên học sinh cho truy vấn điểm danh
+function suggestStudentsForQuery() {
+    const input = document.getElementById("queryName").value.trim().toLowerCase();
+    const querySuggestionsList = document.getElementById("querySuggestions");
+    querySuggestionsList.innerHTML = "";
+
+    if (input.length > 0) {
+        db.collection("students").get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                const student = doc.data();
+                if (student.name.toLowerCase().includes(input)) {
+                    const li = document.createElement("li");
+                    li.textContent = student.name;
+                    li.onclick = function () {
+                        document.getElementById("queryName").value = student.name;
+                        querySuggestionsList.innerHTML = "";
+                    };
+                    querySuggestionsList.appendChild(li);
+                }
+            });
         });
-        alert('Điểm danh thành công!');
-    } catch (e) {
-        console.error("Error adding document: ", e);
     }
 }
 
-export { addNewStudent, suggestStudents, markAttendance };
+// Truy vấn lịch sử điểm danh
+function queryAttendance() {
+    const studentName = document.getElementById("queryName").value.trim();
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+
+    if (studentName === "" || startDate === "" || endDate === "") {
+        alert("Vui lòng nhập tên học sinh và chọn ngày bắt đầu và kết thúc.");
+        return;
+    }
+
+    const attendanceRecords = document.getElementById("attendanceRecords");
+    attendanceRecords.innerHTML = "";
+
+    db.collection("attendance")
+        .where("name", "==", studentName)
+        .get()
+        .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                const record = doc.data();
+                const recordDate = record.date;
+                if (recordDate >= startDate && recordDate <= endDate) {
+                    const li = document.createElement("li");
+                    li.textContent = `${record.date}: ${record.classes.join(", ")}`;
+                    attendanceRecords.appendChild(li);
+                }
+            });
+        })
+        .catch(error => {
+            console.error("Error querying attendance: ", error);
+        });
+}
