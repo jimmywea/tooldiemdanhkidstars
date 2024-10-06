@@ -16,34 +16,35 @@ body {
 }
 
 h1 {
-    color: #007bff;
     text-align: center;
+    color: #007bff;
+}
+
+.section {
+    margin-bottom: 20px;
 }
 
 h2 {
     color: #333;
-    margin-bottom: 10px;
-}
-
-.section {
-    margin-bottom: 30px;
 }
 
 input[type="text"], input[type="date"], input[type="time"] {
     width: calc(100% - 20px);
     padding: 10px;
-    margin-bottom: 10px;
+    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
 button {
     background-color: #007bff;
-    color: #fff;
+    color: #ffffff;
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
@@ -51,6 +52,38 @@ button:hover {
 }
 
 #attendanceResult {
-    margin-top: 20px;
-    font-weight: bold;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+label {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.datalist-options {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    input[type="text"], input[type="date"], input[type="time"] {
+        width: calc(100% - 10px);
+    }
 }
