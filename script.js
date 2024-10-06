@@ -1,83 +1,87 @@
-import { db } from "./firebase-config.js";
-import {
-    collection,
-    addDoc,
-    getDocs,
-    query,
-    where,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("addStudentButton").addEventListener("click", addNewStudent);
-    document.getElementById("markAttendanceButton").addEventListener("click", markAttendance);
-    document.getElementById("queryAttendanceButton").addEventListener("click", queryAttendance);
-});
-
-const studentCollection = collection(db, "students");
-const attendanceCollection = collection(db, "attendance");
+import { db, collection, addDoc, getDocs, query, where } from './firebase-config.js';
 
 async function addNewStudent() {
-    const studentName = document.getElementById("newStudentName").value;
-    const selectedSubjects = Array.from(document.querySelectorAll('#subjectOptions input:checked')).map(input => input.value);
+    const name = document.getElementById('newStudentName').value;
+    const selectedClasses = Array.from(document.querySelectorAll('#classesSelection input[type="checkbox"]:checked'))
+                                  .map(el => el.value);
 
-    if (studentName && selectedSubjects.length > 0) {
+    if (name && selectedClasses.length > 0) {
         try {
-            await addDoc(studentCollection, {
-                name: studentName,
-                classes: selectedSubjects
+            await addDoc(collection(db, "students"), {
+                name: name,
+                classes: selectedClasses
             });
             alert("Học sinh đã được thêm thành công!");
-        } catch (error) {
-            console.error("Lỗi khi thêm học sinh: ", error);
+        } catch (e) {
+            console.error("Lỗi khi thêm học sinh: ", e);
         }
     } else {
-        alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
-    }
-}
-
-async function suggestStudents() {
-    const input = document.getElementById("studentName").value.toLowerCase();
-    const suggestionsList = document.getElementById("suggestions");
-
-    if (input) {
-        try {
-            const querySnapshot = await getDocs(studentCollection);
-            suggestionsList.innerHTML = "";
-            querySnapshot.forEach(doc => {
-                const studentName = doc.data().name.toLowerCase();
-                if (studentName.includes(input)) {
-                    const li = document.createElement("li");
-                    li.textContent = doc.data().name;
-                    li.onclick = () => {
-                        document.getElementById("studentName").value = doc.data().name;
-                        suggestionsList.innerHTML = "";
-                    };
-                    suggestionsList.appendChild(li);
-                }
-            });
-        } catch (error) {
-            console.error("Lỗi khi gợi ý học sinh: ", error);
-        }
-    } else {
-        suggestionsList.innerHTML = "";
+        alert("Vui lòng nhập tên và chọn ít nhất một môn học.");
     }
 }
 
 async function markAttendance() {
-    const studentName = document.getElementById("studentName").value;
+    const name = document.getElementById('attendanceStudentName').value;
 
-    if (studentName) {
+    if (name) {
         try {
-            await addDoc(attendanceCollection, {
-                name: studentName,
-                timestamp: serverTimestamp()
+            await addDoc(collection(db, "attendance"), {
+                name: name,
+                date: new Date().toISOString()
             });
             alert("Điểm danh thành công!");
-        } catch (error) {
-            console.error("Lỗi khi điểm danh: ", error);
+        } catch (e) {
+            console.error("Lỗi khi điểm danh: ", e);
         }
     } else {
-        alert("Vui lòng nhập tên học sinh.");
+        alert("Vui lòng nhập tên học sinh để điểm danh.");
     }
+}
+
+async function queryAttendance() {
+    const name = document.getElementById('queryStudentName').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    if (name) {
+        try {
+            const attendanceQuery = query(
+                collection(db, "attendance"),
+                where("name", "==", name)
+            );
+
+            const querySnapshot = await getDocs(attendanceQuery);
+            let results = "<h3>Kết Quả:</h3>";
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if ((!startDate || new Date(data.date) >= new Date(startDate)) &&
+                    (!endDate || new Date(data.date) <= new Date(endDate))) {
+                    results += `<p>${data.name} - ${data.date}</p>`;
+                }
+            });
+
+            document.getElementById('attendanceResults').innerHTML = results;
+        } catch (e) {
+            console.error("Lỗi khi truy vấn: ", e);
+        }
+    } else {
+        alert("Vui lòng nhập tên học sinh để truy vấn.");
+    }
+}
+
+async function suggestStudents(inputId) {
+    const nameFragment = document.getElementById(inputId).value.toLowerCase();
+    if (nameFragment.length === 0) return;
+
+    const querySnapshot = await getDocs(collection(db, "students"));
+    const suggestions = [];
+
+    querySnapshot.forEach((doc) => {
+        if (doc.data().name.toLowerCase().includes(nameFragment)) {
+            suggestions.push(doc.data().name);
+        }
+    });
+
+    console.log("Suggestions for " + inputId + ": ", suggestions);
 }
