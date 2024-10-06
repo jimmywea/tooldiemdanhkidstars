@@ -4,148 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Công Cụ Điểm Danh Học Sinh</title>
-    <link rel="stylesheet" href="style.css">
+    <script type="module" src="firebase-config.js" defer></script>
+    <script type="module" src="script.js" defer></script>
     <style>
+        /* Đặt phong cách chung cho toàn bộ trang */
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-        }
-        .input-field {
-            margin-bottom: 20px;
-        }
-        ul.suggestions {
-            list-style-type: none;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
             padding: 0;
-            border: 1px solid #ccc;
-            max-height: 150px;
-            overflow-y: auto;
-            background-color: #fff;
         }
-        ul.suggestions li {
+
+        /* Container chính chứa tất cả các phần */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #007BFF;
+        }
+
+        input[type="text"] {
+            width: 100%;
             padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #classesSelection {
+            margin-bottom: 10px;
+        }
+
+        label {
+            margin-right: 15px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
         }
-        ul.suggestions li:hover {
-            background-color: #f0f0f0;
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #attendanceResult {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
         }
     </style>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
-            authDomain: "kidstars-7434d.firebaseapp.com",
-            projectId: "kidstars-7434d",
-            storageBucket: "kidstars-7434d.appspot.com",
-            messagingSenderId: "616350873520",
-            appId: "1:616350873520:web:9d765d0bf5a483fa964875",
-            measurementId: "G-FJMK0F1LRN"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const addNewStudent = async () => {
-                const studentName = document.getElementById("studentName").value;
-                const selectedCourses = Array.from(document.querySelectorAll('input[name="course"]:checked')).map(e => e.value);
-
-                if (studentName.trim() === "" || selectedCourses.length === 0) {
-                    alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
-                    return;
-                }
-
-                try {
-                    await addDoc(collection(db, "students"), {
-                        name: studentName,
-                        courses: selectedCourses
-                    });
-                    alert("Học sinh đã được thêm thành công!");
-                    document.getElementById("studentName").value = "";
-                    document.querySelectorAll('input[name="course"]').forEach(e => e.checked = false);
-                } catch (e) {
-                    console.error("Lỗi khi thêm học sinh: ", e);
-                }
-            };
-
-            const suggestStudents = async (inputId, suggestionBoxId) => {
-                const input = document.getElementById(inputId).value.toLowerCase();
-                const suggestionBox = document.getElementById(suggestionBoxId);
-                suggestionBox.innerHTML = "";
-
-                if (input.trim() === "") {
-                    return;
-                }
-
-                try {
-                    const q = query(collection(db, "students"), where("name", ">=", input), where("name", "<=", input + "\uf8ff"));
-                    const querySnapshot = await getDocs(q);
-
-                    querySnapshot.forEach((doc) => {
-                        const listItem = document.createElement("li");
-                        listItem.textContent = doc.data().name;
-                        listItem.onclick = () => {
-                            document.getElementById(inputId).value = doc.data().name;
-                            suggestionBox.innerHTML = "";
-                        };
-                        suggestionBox.appendChild(listItem);
-                    });
-                } catch (e) {
-                    console.error("Lỗi khi tìm kiếm học sinh: ", e);
-                }
-            };
-
-            const markAttendance = async () => {
-                const studentName = document.getElementById("attendanceName").value;
-                if (studentName.trim() === "") {
-                    alert("Vui lòng nhập tên học sinh.");
-                    return;
-                }
-                try {
-                    await addDoc(collection(db, "attendance"), {
-                        name: studentName,
-                        timestamp: new Date()
-                    });
-                    alert("Điểm danh thành công!");
-                    document.getElementById("attendanceName").value = "";
-                } catch (e) {
-                    console.error("Lỗi khi điểm danh: ", e);
-                }
-            };
-
-            document.getElementById("addStudentBtn").addEventListener("click", addNewStudent);
-            document.getElementById("attendanceName").addEventListener("input", () => suggestStudents("attendanceName", "attendanceSuggestions"));
-        });
-    </script>
 </head>
 <body>
-    <h1>Công Cụ Điểm Danh Học Sinh</h1>
+    <div class="container">
+        <h1>Công Cụ Điểm Danh Học Sinh</h1>
 
-    <div class="input-field">
-        <h2>Thêm Học Sinh Mới</h2>
-        <label for="studentName">Tên Học Sinh Mới:</label>
-        <input type="text" id="studentName" placeholder="Nhập tên học sinh">
-        <div>
-            <label>Chọn Môn Học:</label><br>
-            <input type="checkbox" name="course" value="Piano"> Piano<br>
-            <input type="checkbox" name="course" value="Guitar"> Guitar<br>
-            <input type="checkbox" name="course" value="Nhảy"> Nhảy<br>
-            <input type="checkbox" name="course" value="Thanh Nhạc"> Thanh Nhạc<br>
-            <input type="checkbox" name="course" value="Vẽ"> Vẽ<br>
-            <input type="checkbox" name="course" value="MC"> MC
+        <div class="section">
+            <h2>Thêm Học Sinh Mới</h2>
+            <input type="text" id="newStudentName" placeholder="Nhập tên học sinh">
+            <div id="classesSelection">
+                <label><input type="checkbox" value="Piano"> Piano</label>
+                <label><input type="checkbox" value="Guitar"> Guitar</label>
+                <label><input type="checkbox" value="Nhảy"> Nhảy</label>
+                <label><input type="checkbox" value="Thanh Nhạc"> Thanh Nhạc</label>
+                <label><input type="checkbox" value="Vẽ"> Vẽ</label>
+                <label><input type="checkbox" value="MC"> MC</label>
+            </div>
+            <button id="addStudentButton">Thêm Học Sinh</button>
         </div>
-        <button id="addStudentBtn">Thêm Học Sinh</button>
-    </div>
 
-    <div class="input-field">
-        <h2>Điểm Danh Học Sinh</h2>
-        <label for="attendanceName">Tên Học Sinh:</label>
-        <input type="text" id="attendanceName" placeholder="Nhập tên học sinh">
-        <ul id="attendanceSuggestions" class="suggestions"></ul>
-        <button onclick="markAttendance()">Điểm Danh</button>
+        <div class="section">
+            <h2>Điểm Danh Học Sinh</h2>
+            <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
+            <button id="markAttendanceButton">Điểm Danh</button>
+        </div>
+
+        <div class="section">
+            <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
+            <input type="text" id="queryStudentName" placeholder="Tìm kiếm tên học sinh">
+            <button id="queryAttendanceButton">Truy Vấn</button>
+            <div id="attendanceResult"></div>
+        </div>
     </div>
 </body>
 </html>
