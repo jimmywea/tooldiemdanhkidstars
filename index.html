@@ -27,7 +27,8 @@
 
         <div class="section">
             <h2>Điểm Danh Học Sinh</h2>
-            <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
+            <input list="studentNames" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
+            <datalist id="studentNames"></datalist>
             <div id="classesAttendanceSelection">
                 <label><input type="checkbox" value="Piano"> Piano</label>
                 <label><input type="checkbox" value="Guitar"> Guitar</label>
@@ -41,7 +42,7 @@
 
         <div class="section">
             <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
-            <input type="text" id="queryStudentName" placeholder="Tìm kiếm tên học sinh">
+            <input list="studentNames" id="queryStudentName" placeholder="Tìm kiếm tên học sinh">
             <div>
                 Ngày Bắt Đầu: <input type="date" id="startDate">
                 Ngày Kết Thúc: <input type="date" id="endDate">
