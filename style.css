@@ -1,53 +1,100 @@
+/* Đặt phong cách chung cho toàn bộ trang */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
     color: #333;
-    line-height: 1.6;
+    margin: 0;
+    padding: 0;
 }
 
+/* Container chính chứa tất cả các phần */
 .container {
-    max-width: 600px;
-    margin: 50px auto;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #ffffff;
     padding: 20px;
-    background: #fff;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Tiêu đề chính */
 h1 {
     text-align: center;
     color: #007BFF;
-}
-
-.section {
     margin-bottom: 20px;
 }
 
-input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+/* Mỗi phần thêm học sinh, điểm danh, truy vấn lịch sử */
+.section {
+    margin-bottom: 30px;
 }
 
+/* Tiêu đề phụ cho mỗi phần */
+h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Các nút bấm chung */
 button {
     background-color: #007BFF;
-    color: #fff;
+    color: white;
     border: none;
-    padding: 10px 20px;
-    cursor: pointer;
+    padding: 10px 15px;
     border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-#attendanceResult div {
-    margin-top: 10px;
+/* Input chung cho văn bản */
+input[type="text"] {
+    width: calc(100% - 20px);
     padding: 10px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Phong cách cho các lựa chọn môn học */
+#classesSelection {
+    margin-bottom: 10px;
+}
+
+#classesSelection label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* Phong cách cho kết quả truy vấn lịch sử điểm danh */
+#attendanceResult {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Đảm bảo thích ứng với các thiết bị nhỏ */
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+
+    input[type="text"] {
+        width: calc(100% - 20px);
+    }
 }
