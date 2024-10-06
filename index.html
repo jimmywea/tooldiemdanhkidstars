@@ -6,59 +6,123 @@
     <title>Công Cụ Điểm Danh Học Sinh</title>
     <link rel="stylesheet" href="style.css">
     <!-- Firebase SDK từ CDN -->
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="script.js" defer></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
+            authDomain: "kidstars-7434d.firebaseapp.com",
+            projectId: "kidstars-7434d",
+            storageBucket: "kidstars-7434d.appspot.com",
+            messagingSenderId: "616350873520",
+            appId: "1:616350873520:web:9d765d0bf5a483fa964875",
+            measurementId: "G-FJMK0F1LRN"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Add new student to Firestore
+        async function addNewStudent() {
+            const studentName = document.getElementById("studentName").value;
+            const selectedCourses = Array.from(document.querySelectorAll('input[name="course"]:checked')).map(e => e.value);
+            
+            if (studentName.trim() === "" || selectedCourses.length === 0) {
+                alert("Vui lòng nhập tên học sinh và chọn ít nhất một môn học.");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "students"), {
+                    name: studentName,
+                    courses: selectedCourses
+                });
+                alert("Học sinh đã được thêm thành công!");
+                document.getElementById("studentName").value = "";
+                document.querySelectorAll('input[name="course"]').forEach(e => e.checked = false);
+            } catch (e) {
+                console.error("Lỗi khi thêm học sinh: ", e);
+            }
+        }
+
+        // Suggest students while typing
+        async function suggestStudents(inputId, suggestionBoxId) {
+            const input = document.getElementById(inputId).value.toLowerCase();
+            const suggestionBox = document.getElementById(suggestionBoxId);
+            suggestionBox.innerHTML = "";
+
+            if (input.trim() === "") {
+                return;
+            }
+
+            try {
+                const q = query(collection(db, "students"), where("name", ">=", input), where("name", "<=", input + "\uf8ff"));
+                const querySnapshot = await getDocs(q);
+
+                querySnapshot.forEach((doc) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = doc.data().name;
+                    listItem.onclick = () => {
+                        document.getElementById(inputId).value = doc.data().name;
+                        suggestionBox.innerHTML = "";
+                    };
+                    suggestionBox.appendChild(listItem);
+                });
+            } catch (e) {
+                console.error("Lỗi khi tìm kiếm học sinh: ", e);
+            }
+        }
+
+        window.addNewStudent = addNewStudent;
+        window.suggestStudents = suggestStudents;
+
+    </script>
 </head>
 <body>
     <div id="container">
         <h1>Công Cụ Điểm Danh Học Sinh</h1>
 
-        <!-- Form Thêm Học Sinh Mới -->
+        <!-- Form Thêm Học Sinh -->
         <div class="input-field">
             <h2>Thêm Học Sinh Mới</h2>
-            <label for="newStudentName">Tên Học Sinh Mới:</label>
-            <input type="text" id="newStudentName" placeholder="Nhập tên học sinh mới">
-            <div id="newStudentClasses">
+            <label for="studentName">Tên Học Sinh Mới:</label>
+            <input type="text" id="studentName" placeholder="Nhập tên học sinh">
+            <div>
                 <label>Chọn Môn Học:</label>
-                <input type="checkbox" value="Piano"> Piano
-                <input type="checkbox" value="Guitar"> Guitar
-                <input type="checkbox" value="Nhảy"> Nhảy
-                <input type="checkbox" value="Thanh Nhạc"> Thanh Nhạc
-                <input type="checkbox" value="Vẽ"> Vẽ
-                <input type="checkbox" value="MC"> MC
+                <input type="checkbox" name="course" value="Piano"> Piano
+                <input type="checkbox" name="course" value="Guitar"> Guitar
+                <input type="checkbox" name="course" value="Nhảy"> Nhảy
+                <input type="checkbox" name="course" value="Thanh Nhạc"> Thanh Nhạc
+                <input type="checkbox" name="course" value="Vẽ"> Vẽ
+                <input type="checkbox" name="course" value="MC"> MC
             </div>
-            <button id="addStudentButton">Thêm Học Sinh</button>
+            <button onclick="addNewStudent()">Thêm Học Sinh</button>
         </div>
 
         <!-- Form Điểm Danh -->
         <div class="input-field">
             <h2>Điểm Danh Học Sinh</h2>
-            <label for="studentName">Tên Học Sinh:</label>
-            <input type="text" id="studentName" placeholder="Nhập tên học sinh">
-            <ul id="suggestions"></ul>
-            <div id="courseSelect">
-                <label>Chọn Môn Học:</label>
-                <input type="checkbox" value="Piano"> Piano
-                <input type="checkbox" value="Guitar"> Guitar
-                <input type="checkbox" value="Nhảy"> Nhảy
-                <input type="checkbox" value="Thanh Nhạc"> Thanh Nhạc
-                <input type="checkbox" value="Vẽ"> Vẽ
-                <input type="checkbox" value="MC"> MC
-            </div>
-            <button id="markAttendanceButton">Điểm Danh</button>
+            <label for="attendanceName">Tên Học Sinh:</label>
+            <input type="text" id="attendanceName" oninput="suggestStudents('attendanceName', 'attendanceSuggestions')" placeholder="Nhập tên học sinh">
+            <ul id="attendanceSuggestions"></ul>
+            <button onclick="markAttendance()">Điểm Danh</button>
         </div>
 
-        <!-- Truy Vấn Lịch Sử Điểm Danh -->
+        <!-- Form Truy Vấn Điểm Danh -->
         <div class="input-field">
             <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
             <label for="queryName">Tìm Kiếm Tên Học Sinh:</label>
-            <input type="text" id="queryName" placeholder="Nhập tên học sinh">
+            <input type="text" id="queryName" oninput="suggestStudents('queryName', 'querySuggestions')" placeholder="Nhập tên học sinh">
             <ul id="querySuggestions"></ul>
             <label for="startDate">Ngày Bắt Đầu:</label>
             <input type="date" id="startDate">
             <label for="endDate">Ngày Kết Thúc:</label>
             <input type="date" id="endDate">
-            <button id="queryAttendanceButton">Truy Vấn Điểm Danh</button>
+            <button onclick="queryAttendance()">Truy Vấn Điểm Danh</button>
         </div>
 
         <!-- Kết Quả Truy Vấn -->
