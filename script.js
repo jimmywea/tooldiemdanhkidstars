@@ -87,19 +87,33 @@ document.getElementById("queryAttendanceButton").addEventListener("click", async
             const querySnapshot = await getDocs(q);
             let resultHTML = "";
             let totalSessions = 0;
-            
+            const classCount = {};
+
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 const attendanceDate = new Date(data.date);
-                
+
                 if (attendanceDate >= startDate && attendanceDate < endDate) {
                     totalSessions++;
                     const dateStr = `${attendanceDate.toLocaleDateString()} - ${attendanceDate.toLocaleTimeString()}`;
                     resultHTML += `<p>${data.name} - ${data.classes.join(", ")} - ${dateStr}</p>`;
+
+                    // Count each class
+                    data.classes.forEach((className) => {
+                        if (!classCount[className]) {
+                            classCount[className] = 0;
+                        }
+                        classCount[className]++;
+                    });
                 }
             });
 
-            resultHTML += `<strong>Tổng số buổi đã điểm danh: ${totalSessions}</strong>`;
+            // Display class-specific attendance count
+            resultHTML += `<strong>Tổng số buổi đã điểm danh: ${totalSessions}</strong><br>`;
+            for (const [className, count] of Object.entries(classCount)) {
+                resultHTML += `<strong>${className}: ${count} buổi</strong><br>`;
+            }
+
             document.getElementById("attendanceResult").innerHTML = resultHTML || "Không có kết quả phù hợp.";
         } catch (e) {
             console.error("Lỗi khi truy vấn điểm danh: ", e);
