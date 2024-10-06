@@ -1,3 +1,4 @@
+// Import Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
@@ -15,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Function to load student names for datalist
+// Load student names
 async function loadStudentNames() {
     try {
         const studentsSnapshot = await getDocs(collection(db, "students"));
@@ -85,13 +86,20 @@ document.getElementById("queryAttendanceButton").addEventListener("click", async
             const q = query(collection(db, "attendance"), where("name", "==", name));
             const querySnapshot = await getDocs(q);
             let resultHTML = "";
+            let totalSessions = 0;
+            
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 const attendanceDate = new Date(data.date);
+                
                 if (attendanceDate >= startDate && attendanceDate < endDate) {
-                    resultHTML += `<p>${data.name} - ${data.classes.join(", ")} - ${attendanceDate.toLocaleDateString()}</p>`;
+                    totalSessions++;
+                    const dateStr = `${attendanceDate.toLocaleDateString()} - ${attendanceDate.toLocaleTimeString()}`;
+                    resultHTML += `<p>${data.name} - ${data.classes.join(", ")} - ${dateStr}</p>`;
                 }
             });
+
+            resultHTML += `<strong>Tổng số buổi đã điểm danh: ${totalSessions}</strong>`;
             document.getElementById("attendanceResult").innerHTML = resultHTML || "Không có kết quả phù hợp.";
         } catch (e) {
             console.error("Lỗi khi truy vấn điểm danh: ", e);
