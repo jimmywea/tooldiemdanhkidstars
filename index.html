@@ -24,12 +24,13 @@
                 <label><input type="checkbox" value="Vẽ"> Vẽ</label>
                 <label><input type="checkbox" value="MC"> MC</label>
             </div>
-            <button id="addStudentButton">Thêm Học Sinh</button>
+            <button id="addStudentButton" class="btn">Thêm Học Sinh</button>
         </div>
 
         <div class="section">
             <h2>Điểm Danh Học Sinh</h2>
-            <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
+            <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh" list="studentsList">
+            <datalist id="studentsList"></datalist>
             <div id="classesAttendanceSelection">
                 <label><input type="checkbox" value="Piano"> Piano</label>
                 <label><input type="checkbox" value="Guitar"> Guitar</label>
@@ -38,22 +39,29 @@
                 <label><input type="checkbox" value="Vẽ"> Vẽ</label>
                 <label><input type="checkbox" value="MC"> MC</label>
             </div>
-            <button id="markAttendanceButton">Điểm Danh</button>
+            <button id="markAttendanceButton" class="btn">Điểm Danh</button>
         </div>
 
         <div class="section">
-            <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
-            <input type="text" id="queryStudentName" class="input-field" placeholder="Tìm kiếm tên học sinh">
+            <h2>Truy Vấn Lịch Sử Điểm Danh Theo Ngày</h2>
+            <input type="text" id="queryStudentNameDate" class="input-field" placeholder="Tìm kiếm tên học sinh" list="studentsList">
             <div class="date-group">
                 <label>Ngày Bắt Đầu: <input type="date" id="startDate" class="input-date"></label>
                 <label>Ngày Kết Thúc: <input type="date" id="endDate" class="input-date"></label>
             </div>
+            <button id="queryAttendanceButtonDate" class="btn">Truy Vấn Theo Ngày</button>
+            <div id="attendanceResultDate" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>Truy Vấn Lịch Sử Điểm Danh Theo Giờ</h2>
+            <input type="text" id="queryStudentNameTime" class="input-field" placeholder="Tìm kiếm tên học sinh" list="studentsList">
             <div class="time-group">
                 <label>Giờ Bắt Đầu: <input type="time" id="startTime" class="input-time"></label>
                 <label>Giờ Kết Thúc: <input type="time" id="endTime" class="input-time"></label>
             </div>
-            <button id="queryAttendanceButton" class="btn">Truy Vấn</button>
-            <div id="attendanceResult" class="result"></div>
+            <button id="queryAttendanceButtonTime" class="btn">Truy Vấn Theo Giờ</button>
+            <div id="attendanceResultTime" class="result"></div>
         </div>
     </div>
 </body>
