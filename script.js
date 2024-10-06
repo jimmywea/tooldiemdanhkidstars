@@ -1,8 +1,20 @@
-import { db } from './firebase-config.js';
-import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
+    authDomain: "kidstars-7434d.firebaseapp.com",
+    projectId: "kidstars-7434d",
+    storageBucket: "kidstars-7434d.appspot.com",
+    messagingSenderId: "616350873520",
+    appId: "1:616350873520:web:9d765d0bf5a483fa964875",
+    measurementId: "G-FJMK0F1LRN"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // Hàm thêm học sinh mới
-export async function addNewStudent() {
+async function addNewStudent() {
     const studentName = document.getElementById("studentName").value;
     const selectedCourses = Array.from(document.querySelectorAll('input[name="course"]:checked')).map(e => e.value);
 
@@ -12,7 +24,7 @@ export async function addNewStudent() {
     }
 
     try {
-        await addDoc(collection(db, "students"), {
+        await db.collection("students").add({
             name: studentName,
             courses: selectedCourses
         });
@@ -25,7 +37,7 @@ export async function addNewStudent() {
 }
 
 // Hàm gợi ý tên học sinh khi nhập
-export async function suggestStudents(inputId, suggestionBoxId) {
+async function suggestStudents(inputId, suggestionBoxId) {
     const input = document.getElementById(inputId).value.toLowerCase();
     const suggestionBox = document.getElementById(suggestionBoxId);
     suggestionBox.innerHTML = "";
@@ -35,8 +47,8 @@ export async function suggestStudents(inputId, suggestionBoxId) {
     }
 
     try {
-        const q = query(collection(db, "students"), where("name", ">=", input), where("name", "<=", input + "\uf8ff"));
-        const querySnapshot = await getDocs(q);
+        const q = db.collection("students").where("name", ">=", input).where("name", "<=", input + "\uf8ff");
+        const querySnapshot = await q.get();
 
         querySnapshot.forEach((doc) => {
             const listItem = document.createElement("li");
@@ -52,18 +64,58 @@ export async function suggestStudents(inputId, suggestionBoxId) {
     }
 }
 
-// Hàm điểm danh học sinh (ví dụ)
-export async function markAttendance() {
+// Hàm điểm danh học sinh
+async function markAttendance() {
     const studentName = document.getElementById("attendanceName").value;
-    // Logic điểm danh thêm vào đây
+    if (studentName.trim() === "") {
+        alert("Vui lòng nhập tên học sinh.");
+        return;
+    }
+    try {
+        await db.collection("attendance").add({
+            name: studentName,
+            timestamp: new Date()
+        });
+        alert("Điểm danh thành công!");
+        document.getElementById("attendanceName").value = "";
+    } catch (e) {
+        console.error("Lỗi khi điểm danh: ", e);
+    }
 }
 
-// Hàm truy vấn lịch sử điểm danh (ví dụ)
-export async function queryAttendance() {
+// Hàm truy vấn lịch sử điểm danh
+async function queryAttendance() {
     const studentName = document.getElementById("queryName").value;
-    // Logic truy vấn lịch sử điểm danh thêm vào đây
+    const startDate = new Date(document.getElementById("startDate").value);
+    const endDate = new Date(document.getElementById("endDate").value);
+    endDate.setDate(endDate.getDate() + 1);
+
+    const attendanceRecords = document.getElementById("attendanceRecords");
+    attendanceRecords.innerHTML = "";
+
+    if (studentName.trim() === "") {
+        alert("Vui lòng nhập tên học sinh.");
+        return;
+    }
+
+    try {
+        const q = db.collection("attendance")
+            .where("name", "==", studentName)
+            .where("timestamp", ">=", startDate)
+            .where("timestamp", "<=", endDate);
+        const querySnapshot = await q.get();
+
+        querySnapshot.forEach((doc) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `Tên: ${doc.data().name}, Thời Gian: ${doc.data().timestamp.toDate()}`;
+            attendanceRecords.appendChild(listItem);
+        });
+    } catch (e) {
+        console.error("Lỗi khi truy vấn điểm danh: ", e);
+    }
 }
 
+// Gắn các hàm vào window để sử dụng từ HTML
 window.addNewStudent = addNewStudent;
 window.suggestStudents = suggestStudents;
 window.markAttendance = markAttendance;
