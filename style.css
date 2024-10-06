@@ -23,7 +23,7 @@ h1, h2 {
 }
 
 /* Phong cách cho các input và button */
-input[type="text"], button {
+input[type="text"], input[type="date"], button {
     width: calc(100% - 20px);
     padding: 10px;
     margin-bottom: 10px;
@@ -48,4 +48,9 @@ button:hover {
 label {
     display: block;
     margin: 5px 0;
+}
+
+/* Phong cách cho phần chọn ngày tháng */
+.date-selection {
+    margin-bottom: 10px;
 }
