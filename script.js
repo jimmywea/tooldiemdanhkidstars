@@ -16,6 +16,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Load students for autocomplete
+async function loadStudentNames() {
+    const studentsList = document.getElementById("studentsList");
+    try {
+        const querySnapshot = await getDocs(collection(db, "students"));
+        let options = "";
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            options += `<option value="${data.name}">`;
+        });
+        studentsList.innerHTML = options;
+    } catch (e) {
+        console.error("Error loading student names: ", e);
+    }
+}
+
+loadStudentNames();
+
 // Thêm học sinh mới
 document.getElementById("addStudentButton").addEventListener("click", async () => {
     const name = document.getElementById("newStudentName").value.trim();
@@ -28,6 +46,7 @@ document.getElementById("addStudentButton").addEventListener("click", async () =
                 classes: selectedClasses
             });
             alert("Học sinh đã được thêm thành công!");
+            loadStudentNames(); // Reload student names for autocomplete
         } catch (e) {
             console.error("Lỗi khi thêm học sinh: ", e);
         }
