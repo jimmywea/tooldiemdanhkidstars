@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,63 +10,56 @@
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="script.js" defer></script>
 </head>
+
 <body>
     <div id="container">
         <h1>Công Cụ Điểm Danh Học Sinh</h1>
 
-        <!-- Form Thêm Học Sinh Mới -->
+        <!-- Thêm học sinh mới -->
         <div class="input-field">
             <h2>Thêm Học Sinh Mới</h2>
             <label for="newStudentName">Tên Học Sinh Mới:</label>
-            <input type="text" id="newStudentName" placeholder="Nhập tên học sinh mới">
-            <div id="newStudentClasses">
-                <label>Chọn Môn Học:</label>
-                <input type="checkbox" value="Piano"> Piano
-                <input type="checkbox" value="Guitar"> Guitar
-                <input type="checkbox" value="Nhảy"> Nhảy
-                <input type="checkbox" value="Thanh Nhạc"> Thanh Nhạc
-                <input type="checkbox" value="Vẽ"> Vẽ
-                <input type="checkbox" value="MC"> MC
+            <input type="text" id="newStudentName" placeholder="Nhập tên học sinh">
+            <label>Chọn Môn Học:</label>
+            <div id="subjectOptions">
+                <input type="checkbox" value="Piano" id="piano"><label for="piano">Piano</label>
+                <input type="checkbox" value="Guitar" id="guitar"><label for="guitar">Guitar</label>
+                <input type="checkbox" value="Nhảy" id="dance"><label for="dance">Nhảy</label>
+                <input type="checkbox" value="Thanh Nhạc" id="vocal"><label for="vocal">Thanh Nhạc</label>
+                <input type="checkbox" value="Vẽ" id="draw"><label for="draw">Vẽ</label>
+                <input type="checkbox" value="MC" id="mc"><label for="mc">MC</label>
             </div>
-            <button id="addStudentButton">Thêm Học Sinh</button>
+            <button onclick="addNewStudent()">Thêm Học Sinh</button>
         </div>
 
-        <!-- Form Điểm Danh -->
+        <!-- Điểm danh học sinh -->
         <div class="input-field">
             <h2>Điểm Danh Học Sinh</h2>
             <label for="studentName">Tên Học Sinh:</label>
-            <input type="text" id="studentName" placeholder="Nhập tên học sinh">
+            <input type="text" id="studentName" oninput="suggestStudents()" placeholder="Nhập tên học sinh">
             <ul id="suggestions"></ul>
-            <div id="courseSelect">
-                <label>Chọn Môn Học:</label>
-                <input type="checkbox" value="Piano"> Piano
-                <input type="checkbox" value="Guitar"> Guitar
-                <input type="checkbox" value="Nhảy"> Nhảy
-                <input type="checkbox" value="Thanh Nhạc"> Thanh Nhạc
-                <input type="checkbox" value="Vẽ"> Vẽ
-                <input type="checkbox" value="MC"> MC
-            </div>
-            <button id="markAttendanceButton">Điểm Danh</button>
+            <button onclick="markAttendance()">Điểm Danh</button>
         </div>
 
-        <!-- Truy Vấn Lịch Sử Điểm Danh -->
+        <!-- Truy vấn lịch sử điểm danh -->
         <div class="input-field">
             <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
             <label for="queryName">Tìm Kiếm Tên Học Sinh:</label>
-            <input type="text" id="queryName" placeholder="Nhập tên học sinh">
+            <input type="text" id="queryName" oninput="suggestStudentsForQuery()" placeholder="Nhập tên học sinh">
             <ul id="querySuggestions"></ul>
             <label for="startDate">Ngày Bắt Đầu:</label>
             <input type="date" id="startDate">
             <label for="endDate">Ngày Kết Thúc:</label>
             <input type="date" id="endDate">
-            <button id="queryAttendanceButton">Truy Vấn Điểm Danh</button>
+            <button onclick="queryAttendance()">Truy Vấn Điểm Danh</button>
         </div>
 
-        <!-- Kết Quả Truy Vấn -->
+        <!-- Kết quả truy vấn -->
         <div id="queryResults">
             <h3>Kết Quả Điểm Danh:</h3>
             <ul id="attendanceRecords"></ul>
         </div>
     </div>
 </body>
+
 </html>
