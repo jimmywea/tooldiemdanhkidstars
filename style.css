@@ -1,102 +1,74 @@
-/* Đặt phong cách chung cho toàn bộ trang */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
     color: #333;
     margin: 0;
     padding: 0;
-    line-height: 1.6;
 }
 
-/* Container chính chứa tất cả các phần */
 .container {
-    max-width: 500px;
-    margin: 40px auto;
+    max-width: 600px;
+    margin: 20px auto;
     background-color: #ffffff;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Tiêu đề chính */
-.title {
+h1 {
     text-align: center;
     color: #007bff;
-    font-size: 1.8rem;
+}
+
+.section {
     margin-bottom: 20px;
 }
 
-/* Các phần tiêu đề h2 */
-.section h2 {
-    font-size: 1.2rem;
+h2 {
+    font-size: 1.5rem;
     margin-bottom: 10px;
     color: #333;
 }
 
-/* Các trường nhập liệu */
-.input-field {
+.input-field,
+.input-date,
+.input-time {
     width: calc(100% - 20px);
     padding: 10px;
-    margin-bottom: 10px;
+    margin: 5px 0 10px 0;
     border-radius: 5px;
     border: 1px solid #ddd;
     font-size: 1rem;
 }
 
-/* Trường nhập ngày */
-.input-date {
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 1rem;
-}
-
-/* Nhóm checkbox */
-.checkbox-group {
-    margin-bottom: 15px;
-}
-
-.checkbox-group label {
-    display: inline-block;
-    margin-right: 10px;
-    font-size: 0.9rem;
-}
-
-/* Nút bấm */
 .btn {
-    width: 100%;
-    padding: 12px;
     background-color: #007bff;
-    color: #ffffff;
+    color: white;
+    padding: 10px;
     border: none;
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.3s ease;
+    width: 100%;
 }
 
 .btn:hover {
     background-color: #0056b3;
 }
 
-/* Nhóm nhập ngày */
-.date-group {
+.date-group,
+.time-group {
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
 }
 
-.date-group label {
-    font-size: 0.9rem;
-    margin-bottom: 5px;
+.result {
+    margin-top: 15px;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
-/* Kết quả hiển thị */
-.result {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+.result h4 {
+    margin-bottom: 5px;
 }
