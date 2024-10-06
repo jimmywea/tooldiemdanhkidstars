@@ -11,6 +11,7 @@ const firebaseConfig = {
     appId: "1:616350873520:web:9d765d0bf5a483fa964875",
     measurementId: "G-FJMK0F1LRN"
 };
+
 // Khởi tạo Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -65,7 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Truy vấn lịch sử điểm danh
-    document.getElementById("queryAttendanceButton").addEventListener("click", async () => {
+    document.getElementById("queryAttendanceButton").addEventListener("click", queryAttendance);
+
+    async function queryAttendance() {
         const name = document.getElementById("queryStudentName").value;
 
         if (name) {
@@ -74,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const querySnapshot = await getDocs(attendanceQuery);
 
                 const resultDiv = document.getElementById("attendanceResult");
-                resultDiv.innerHTML = "";  // Clear previous results
+                resultDiv.innerHTML = "";  // Xóa các kết quả trước đó
 
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((doc) => {
@@ -92,5 +95,5 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             alert("Vui lòng nhập tên học sinh để truy vấn.");
         }
-    });
+    }
 });
