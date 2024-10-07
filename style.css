@@ -1,69 +1,69 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #f4f4f4;
     color: #333;
     margin: 0;
     padding: 0;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 500px;
     margin: 20px auto;
-    background-color: #ffffff;
+    background-color: #fff;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
-    color: #007bff;
+    color: #0066cc;
 }
 
 .section {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
-button {
-    background-color: #007bff;
-    color: white;
+.button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
     border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 4px;
     cursor: pointer;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-input[type="text"],
-input[type="date"],
-input[type="time"] {
-    width: calc(100% - 20px);
-    padding: 8px;
-    margin-bottom: 10px;
+    border-radius: 5px;
     font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+}
+
+.primary-button {
+    background-color: #0066cc;
+    color: white;
+}
+
+.secondary-button {
+    background-color: #28a745;
+    color: white;
 }
 
 .suggestions-list {
+    background-color: #fff;
     border: 1px solid #ccc;
+    border-radius: 5px;
     max-height: 100px;
     overflow-y: auto;
-    background: white;
-    position: absolute;
-    width: calc(100% - 20px);
-    z-index: 1000;
+    margin-top: 5px;
 }
 
 .suggestions-list div {
-    padding: 8px;
+    padding: 10px;
     cursor: pointer;
 }
 
 .suggestions-list div:hover {
-    background-color: #e9e9e9;
+    background-color: #f0f0f0;
+}
+
+.result-container {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    margin-top: 20px;
 }
