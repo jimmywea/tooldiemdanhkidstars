@@ -20,11 +20,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const queryStudentButton = document.getElementById("queryStudentButton");
     const queryTimeButton = document.getElementById("queryTimeButton");
 
-    addStudentButton.addEventListener("click", addStudent);
-    markAttendanceButton.addEventListener("click", markAttendance);
-    queryStudentButton.addEventListener("click", queryAttendanceByStudent);
-    queryTimeButton.addEventListener("click", queryAttendanceByTime);
+    document.addEventListener("DOMContentLoaded", () => {
+    // Add event listeners after the DOM content is fully loaded
+    document.getElementById("addStudentButton").addEventListener("click", addStudent);
+    document.getElementById("markAttendanceButton").addEventListener("click", markAttendance);
+    
+    const queryByNameAndDateButton = document.getElementById("queryByNameAndDateButton");
+    const queryByTimeButton = document.getElementById("queryByTimeButton");
 
+    if (queryByNameAndDateButton) {
+        queryByNameAndDateButton.addEventListener("click", queryAttendanceByNameAndDate);
+    }
+
+    if (queryByTimeButton) {
+        queryByTimeButton.addEventListener("click", queryAttendanceByTime);
+    }
+
+    // Gợi ý tên học sinh cho phần điểm danh và truy vấn
     const attendanceStudentNameInput = document.getElementById("attendanceStudentName");
     const queryStudentNameInput = document.getElementById("queryStudentName");
 
