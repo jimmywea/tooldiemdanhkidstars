@@ -34,16 +34,18 @@ document.getElementById("markAttendanceButton").addEventListener("click", async 
     const selectedClasses = Array.from(
         document.querySelectorAll("#classesAttendanceSelection input:checked")
     ).map((checkbox) => checkbox.value);
-    
-    if (studentName && selectedClasses.length > 0) {
+    const attendanceDate = document.getElementById("attendanceDate").value;
+    const attendanceTime = document.getElementById("attendanceTime").value;
+
+    if (studentName && selectedClasses.length > 0 && attendanceDate && attendanceTime) {
         await addDoc(collection(db, "attendance"), {
             name: studentName,
             classes: selectedClasses,
-            date: new Date().toISOString(),
+            date: `${attendanceDate}T${attendanceTime}:00`,
         });
         alert("Điểm danh thành công!");
     } else {
-        alert("Vui lòng nhập tên và chọn ít nhất một lớp học để điểm danh.");
+        alert("Vui lòng nhập tên, chọn lớp học, và chọn ngày giờ để điểm danh.");
     }
 });
 
@@ -53,6 +55,11 @@ async function setupAutoComplete(inputId, suggestionsListId) {
     const suggestionsList = document.getElementById(suggestionsListId);
 
     input.addEventListener("input", async () => {
+        if (input.value.length === 0) {
+            suggestionsList.innerHTML = "";
+            return;
+        }
+
         const querySnapshot = await getDocs(collection(db, "students"));
         const suggestions = [];
         querySnapshot.forEach((doc) => {
@@ -76,4 +83,3 @@ async function setupAutoComplete(inputId, suggestionsListId) {
 
 setupAutoComplete("attendanceStudentName", "suggestionsListAttendance");
 setupAutoComplete("queryStudentName", "suggestionsListQuery");
-
