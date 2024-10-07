@@ -1,56 +1,60 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: #f0f0f0;
     margin: 0;
     padding: 0;
 }
 
 .container {
-    max-width: 500px;
+    max-width: 600px;
     margin: 20px auto;
-    background-color: #fff;
+    background: #ffffff;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
-    color: #0066cc;
+    color: #007bff;
 }
 
 .section {
     margin-bottom: 20px;
 }
 
-.button {
+input[type="text"],
+input[type="date"],
+input[type="time"] {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+button {
     width: 100%;
     padding: 10px;
-    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
     border: none;
+    border-radius: 4px;
     cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
 }
 
-.primary-button {
-    background-color: #0066cc;
-    color: white;
-}
-
-.secondary-button {
-    background-color: #28a745;
-    color: white;
+button:hover {
+    background-color: #0056b3;
 }
 
 .suggestions-list {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
     max-height: 100px;
     overflow-y: auto;
-    margin-top: 5px;
+    background: #fff;
+    border: 1px solid #ccc;
+    position: absolute;
+    z-index: 1000;
+    width: calc(100% - 20px);
+    margin-left: 10px;
 }
 
 .suggestions-list div {
@@ -59,11 +63,5 @@ h1 {
 }
 
 .suggestions-list div:hover {
-    background-color: #f0f0f0;
-}
-
-.result-container {
-    padding: 10px;
-    border-top: 1px solid #ccc;
-    margin-top: 20px;
+    background: #f0f0f0;
 }
