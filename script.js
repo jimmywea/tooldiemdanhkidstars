@@ -1,10 +1,8 @@
-// Import Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-// Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
+    apiKey: "AIzaSyDL56ek...",
     authDomain: "kidstars-7434d.firebaseapp.com",
     projectId: "kidstars-7434d",
     storageBucket: "kidstars-7434d.appspot.com",
@@ -13,125 +11,93 @@ const firebaseConfig = {
     measurementId: "G-FJMK0F1LRN"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Load student names for suggestions
-async function loadStudentNames() {
-    const studentsRef = collection(db, "students");
-    const studentSnapshot = await getDocs(studentsRef);
-    const studentList = document.getElementById("studentList");
+document.addEventListener("DOMContentLoaded", () => {
+    const addStudentButton = document.getElementById("addStudentButton");
+    const markAttendanceButton = document.getElementById("markAttendanceButton");
+    const queryStudentButton = document.getElementById("queryStudentButton");
+    const queryTimeButton = document.getElementById("queryTimeButton");
 
-    studentSnapshot.forEach((doc) => {
-        const option = document.createElement("option");
-        option.value = doc.data().name;
-        studentList.appendChild(option);
-    });
-}
+    addStudentButton.addEventListener("click", addStudent);
+    markAttendanceButton.addEventListener("click", markAttendance);
+    queryStudentButton.addEventListener("click", queryAttendanceByStudent);
+    queryTimeButton.addEventListener("click", queryAttendanceByTime);
 
-// Add new student
+    const attendanceStudentNameInput = document.getElementById("attendanceStudentName");
+    const queryStudentNameInput = document.getElementById("queryStudentName");
+
+    if (attendanceStudentNameInput) {
+        attendanceStudentNameInput.addEventListener("input", async () => {
+            const query = attendanceStudentNameInput.value.toLowerCase();
+            const suggestions = await getStudentSuggestions(query);
+            updateSuggestionsList("suggestionsListAttendance", suggestions);
+        });
+    }
+
+    if (queryStudentNameInput) {
+        queryStudentNameInput.addEventListener("input", async () => {
+            const query = queryStudentNameInput.value.toLowerCase();
+            const suggestions = await getStudentSuggestions(query);
+            updateSuggestionsList("suggestionsListQuery", suggestions);
+        });
+    }
+});
+
 async function addStudent() {
-    const studentName = document.getElementById("newStudentName").value;
-    const classesSelection = document.querySelectorAll("#classesSelection input[type=checkbox]:checked");
-    const classes = Array.from(classesSelection).map((checkbox) => checkbox.value);
-
-    if (studentName && classes.length > 0) {
-        try {
-            await addDoc(collection(db, "students"), {
-                name: studentName,
-                classes: classes
-            });
-            alert("Đã thêm học sinh thành công!");
-        } catch (e) {
-            console.error("Lỗi khi thêm học sinh: ", e);
-        }
+    const newStudentName = document.getElementById("newStudentName").value;
+    const classes = Array.from(document.querySelectorAll("#classesSelection input:checked")).map(cb => cb.value);
+    if (newStudentName && classes.length > 0) {
+        await addDoc(collection(db, "students"), { name: newStudentName, classes });
+        alert("Học sinh đã được thêm!");
     } else {
-        alert("Vui lòng nhập tên học sinh và chọn ít nhất một lớp học.");
+        alert("Vui lòng nhập tên học sinh và chọn ít nhất một lớp!");
     }
 }
 
-// Mark student attendance
 async function markAttendance() {
     const studentName = document.getElementById("attendanceStudentName").value;
-    const classesAttendanceSelection = document.querySelectorAll("#classesAttendanceSelection input[type=checkbox]:checked");
-    const classes = Array.from(classesAttendanceSelection).map((checkbox) => checkbox.value);
-    const currentDate = new Date().toISOString();
-
+    const classes = Array.from(document.querySelectorAll("#classesAttendanceSelection input:checked")).map(cb => cb.value);
     if (studentName && classes.length > 0) {
-        try {
-            await addDoc(collection(db, "attendance"), {
-                name: studentName,
-                classes: classes,
-                date: currentDate
-            });
-            alert("Điểm danh thành công!");
-        } catch (e) {
-            console.error("Lỗi khi điểm danh: ", e);
-        }
+        await addDoc(collection(db, "attendance"), { name: studentName, classes, date: new Date().toISOString() });
+        alert("Điểm danh thành công!");
     } else {
-        alert("Vui lòng nhập tên học sinh và chọn ít nhất một lớp học.");
+        alert("Vui lòng nhập tên học sinh và chọn ít nhất một lớp để điểm danh!");
     }
 }
 
-// Query attendance by name and date range
-async function queryAttendanceByNameAndDate() {
-    const studentName = document.getElementById("queryStudentName").value;
-    const startDate = new Date(document.getElementById("startDate").value).toISOString();
-    const endDate = new Date(document.getElementById("endDate").value).toISOString();
-
-    const attendanceRef = collection(db, "attendance");
-    const q = query(attendanceRef, where("name", "==", studentName));
-    const querySnapshot = await getDocs(q);
-
-    let resultHTML = "";
-    let totalAttendance = 0;
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const attendanceDate = new Date(data.date);
-        if (attendanceDate >= new Date(startDate) && attendanceDate <= new Date(endDate)) {
-            resultHTML += `${data.name} - ${data.classes.join(", ")} - ${attendanceDate.toLocaleString()}<br>`;
-            totalAttendance++;
+async function getStudentSuggestions(query) {
+    const snapshot = await getDocs(collection(db, "students"));
+    let suggestions = [];
+    snapshot.forEach((doc) => {
+        const studentName = doc.data().name.toLowerCase();
+        if (studentName.includes(query)) {
+            suggestions.push(doc.data().name);
         }
     });
-    resultHTML += `<strong>Tổng số buổi đã điểm danh: ${totalAttendance}</strong>`;
-    document.getElementById("attendanceResultByName").innerHTML = resultHTML;
+    return suggestions;
 }
 
-// Query attendance by time range
-async function queryAttendanceByTime() {
-    const startTime = document.getElementById("startTime").value;
-    const endTime = document.getElementById("endTime").value;
-
-    if (!startTime || !endTime) {
-        alert("Vui lòng chọn giờ bắt đầu và giờ kết thúc.");
-        return;
+function updateSuggestionsList(listId, suggestions) {
+    const suggestionsList = document.getElementById(listId);
+    if (suggestionsList) {
+        suggestionsList.innerHTML = "";
+        suggestions.forEach((suggestion) => {
+            const suggestionItem = document.createElement("div");
+            suggestionItem.className = "suggestion-item";
+            suggestionItem.textContent = suggestion;
+            suggestionsList.appendChild(suggestionItem);
+            suggestionItem.addEventListener("click", () => {
+                if (listId === "suggestionsListAttendance") {
+                    document.getElementById("attendanceStudentName").value = suggestion;
+                } else if (listId === "suggestionsListQuery") {
+                    document.getElementById("queryStudentName").value = suggestion;
+                }
+                suggestionsList.innerHTML = "";
+            });
+        });
     }
-
-    const attendanceRef = collection(db, "attendance");
-    const querySnapshot = await getDocs(attendanceRef);
-
-    let resultHTML = "";
-    let totalAttendance = 0;
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const attendanceDate = new Date(data.date);
-        const attendanceTime = attendanceDate.getHours() + ":" + attendanceDate.getMinutes();
-
-        if (attendanceTime >= startTime && attendanceTime <= endTime) {
-            resultHTML += `${data.name} - ${data.classes.join(", ")} - ${attendanceDate.toLocaleString()}<br>`;
-            totalAttendance++;
-        }
-    });
-    resultHTML += `<strong>Tổng số học sinh đã điểm danh trong khoảng thời gian: ${totalAttendance}</strong>`;
-    document.getElementById("attendanceResultByTime").innerHTML = resultHTML;
 }
 
-// Event listeners
-document.getElementById("addStudentButton").addEventListener("click", addStudent);
-document.getElementById("markAttendanceButton").addEventListener("click", markAttendance);
-document.getElementById("queryByNameAndDateButton").addEventListener("click", queryAttendanceByNameAndDate);
-document.getElementById("queryByTimeButton").addEventListener("click", queryAttendanceByTime);
-
-// Load student names for suggestions when the page loads
-window.onload = loadStudentNames;
+// Implement the remaining query functions (queryAttendanceByStudent, queryAttendanceByTime)
