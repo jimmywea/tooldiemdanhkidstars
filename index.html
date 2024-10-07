@@ -26,7 +26,7 @@
                 <label><input type="checkbox" value="Vẽ"> Vẽ</label>
                 <label><input type="checkbox" value="MC"> MC</label>
             </div>
-            <button id="addStudentButton">Thêm Học Sinh</button>
+            <button id="addStudentButton" class="button primary-button">Thêm Học Sinh</button>
         </div>
 
         <!-- Điểm Danh Học Sinh -->
@@ -44,7 +44,7 @@
             </div>
             Ngày Điểm Danh: <input type="date" id="attendanceDate">
             Giờ Điểm Danh: <input type="time" id="attendanceTime">
-            <button id="markAttendanceButton">Điểm Danh</button>
+            <button id="markAttendanceButton" class="button primary-button">Điểm Danh</button>
         </div>
 
         <!-- Truy Vấn Lịch Sử Điểm Danh -->
@@ -56,7 +56,7 @@
                 Ngày Bắt Đầu: <input type="date" id="startDate">
                 Ngày Kết Thúc: <input type="date" id="endDate">
             </div>
-            <button id="queryByNameAndDateButton">Truy Vấn Học Sinh Theo Tên Và Ngày</button>
+            <button id="queryByNameAndDateButton" class="button secondary-button">Truy Vấn Học Sinh Theo Tên Và Ngày</button>
         </div>
 
         <!-- Truy Vấn Điểm Danh Theo Giờ -->
@@ -68,10 +68,10 @@
                 Giờ Bắt Đầu: <input type="time" id="startTime">
                 Giờ Kết Thúc: <input type="time" id="endTime">
             </div>
-            <button id="queryByTimeButton">Truy Vấn Theo Giờ</button>
+            <button id="queryByTimeButton" class="button secondary-button">Truy Vấn Theo Giờ</button>
         </div>
 
-        <div id="attendanceResult"></div>
+        <div id="attendanceResult" class="result-container"></div>
     </div>
 </body>
 
