@@ -21,25 +21,22 @@ h1 {
 }
 
 .section {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
-input[type="text"],
-input[type="date"],
-input[type="time"] {
+input[type="text"], input[type="date"], input[type="time"] {
     width: calc(100% - 20px);
     padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 10px;
+    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
 button {
     background-color: #007bff;
-    color: #ffffff;
+    color: white;
+    padding: 10px 20px;
     border: none;
-    padding: 10px 15px;
     border-radius: 4px;
     cursor: pointer;
 }
@@ -48,7 +45,21 @@ button:hover {
     background-color: #0056b3;
 }
 
-#attendanceResult {
-    margin-top: 20px;
-    font-weight: bold;
+.suggestions-list {
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    background: #fff;
+    position: absolute;
+    width: calc(100% - 20px);
+    z-index: 1;
+}
+
+.suggestion-item {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
 }
