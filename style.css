@@ -24,27 +24,24 @@ h1 {
     margin-bottom: 20px;
 }
 
-h2 {
-    color: #333;
-}
-
-input[type="text"], input[type="date"], input[type="time"] {
+input[type="text"],
+input[type="date"],
+input[type="time"] {
     width: calc(100% - 20px);
     padding: 10px;
-    margin: 10px 0;
+    margin-top: 5px;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box;
 }
 
 button {
     background-color: #007bff;
     color: #ffffff;
-    padding: 10px 20px;
     border: none;
+    padding: 10px 15px;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
 button:hover {
@@ -52,38 +49,6 @@ button:hover {
 }
 
 #attendanceResult {
-    background-color: #f9f9f9;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-top: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-label {
-    display: inline-block;
-    margin-right: 15px;
-}
-
-.datalist-options {
-    display: none;
-}
-
-@media (max-width: 600px) {
-    .container {
-        padding: 15px;
-    }
-
-    button {
-        width: 100%;
-    }
-
-    input[type="text"], input[type="date"], input[type="time"] {
-        width: calc(100% - 10px);
-    }
+    margin-top: 20px;
+    font-weight: bold;
 }
