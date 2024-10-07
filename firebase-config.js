@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
     authDomain: "kidstars-7434d.firebaseapp.com",
