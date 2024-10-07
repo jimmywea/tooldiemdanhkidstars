@@ -6,8 +6,6 @@ import {
     query,
     where,
     orderBy,
-    startAt,
-    endAt,
 } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
 // Thêm học sinh mới
@@ -83,3 +81,56 @@ async function setupAutoComplete(inputId, suggestionsListId) {
 
 setupAutoComplete("attendanceStudentName", "suggestionsListAttendance");
 setupAutoComplete("queryStudentName", "suggestionsListQuery");
+
+// Truy vấn học sinh theo tên và ngày
+document.getElementById("queryByNameAndDateButton").addEventListener("click", async () => {
+    const studentName = document.getElementById("queryStudentName").value;
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+
+    if (studentName && startDate && endDate) {
+        const attendanceQuery = query(
+            collection(db, "attendance"),
+            where("name", "==", studentName),
+            orderBy("date")
+        );
+
+        const querySnapshot = await getDocs(attendanceQuery);
+        let results = "";
+        querySnapshot.forEach((doc) => {
+            const date = doc.data().date;
+            if (date >= startDate && date <= endDate) {
+                results += `${doc.data().name} - ${doc.data().classes.join(", ")} - ${date}<br>`;
+            }
+        });
+
+        document.getElementById("attendanceResult").innerHTML = results || "Không có kết quả.";
+    } else {
+        alert("Vui lòng nhập tên và chọn ngày.");
+    }
+});
+
+// Truy vấn học sinh theo giờ
+document.getElementById("queryByTimeButton").addEventListener("click", async () => {
+    const timeStartDate = document.getElementById("timeStartDate").value;
+    const timeEndDate = document.getElementById("timeEndDate").value;
+    const startTime = document.getElementById("startTime").value;
+    const endTime = document.getElementById("endTime").value;
+
+    if (timeStartDate && timeEndDate && startTime && endTime) {
+        const attendanceQuery = query(collection(db, "attendance"), orderBy("date"));
+
+        const querySnapshot = await getDocs(attendanceQuery);
+        let results = "";
+        querySnapshot.forEach((doc) => {
+            const date = doc.data().date;
+            if (date >= `${timeStartDate}T${startTime}` && date <= `${timeEndDate}T${endTime}`) {
+                results += `${doc.data().name} - ${doc.data().classes.join(", ")} - ${date}<br>`;
+            }
+        });
+
+        document.getElementById("attendanceResult").innerHTML = results || "Không có kết quả.";
+    } else {
+        alert("Vui lòng nhập đầy đủ thông tin truy vấn theo giờ.");
+    }
+});
