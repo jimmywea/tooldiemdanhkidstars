@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +8,10 @@
     <script type="module" src="firebase-config.js" defer></script>
     <script type="module" src="script.js" defer></script>
 </head>
-
 <body>
     <div class="container">
         <h1>Công Cụ Điểm Danh Học Sinh</h1>
 
-        <!-- Thêm Học Sinh Mới -->
         <div class="section">
             <h2>Thêm Học Sinh Mới</h2>
             <input type="text" id="newStudentName" placeholder="Nhập tên học sinh">
@@ -26,10 +23,9 @@
                 <label><input type="checkbox" value="Vẽ"> Vẽ</label>
                 <label><input type="checkbox" value="MC"> MC</label>
             </div>
-            <button id="addStudentButton" class="button primary-button">Thêm Học Sinh</button>
+            <button id="addStudentButton">Thêm Học Sinh</button>
         </div>
 
-        <!-- Điểm Danh Học Sinh -->
         <div class="section">
             <h2>Điểm Danh Học Sinh</h2>
             <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
@@ -42,12 +38,13 @@
                 <label><input type="checkbox" value="Vẽ"> Vẽ</label>
                 <label><input type="checkbox" value="MC"> MC</label>
             </div>
-            Ngày Điểm Danh: <input type="date" id="attendanceDate">
-            Giờ Điểm Danh: <input type="time" id="attendanceTime">
-            <button id="markAttendanceButton" class="button primary-button">Điểm Danh</button>
+            <div>
+                Ngày Điểm Danh: <input type="date" id="attendanceDate">
+                Giờ Điểm Danh: <input type="time" id="attendanceTime">
+            </div>
+            <button id="markAttendanceButton">Điểm Danh</button>
         </div>
 
-        <!-- Truy Vấn Lịch Sử Điểm Danh -->
         <div class="section">
             <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
             <input type="text" id="queryStudentName" placeholder="Tìm kiếm tên học sinh">
@@ -56,10 +53,9 @@
                 Ngày Bắt Đầu: <input type="date" id="startDate">
                 Ngày Kết Thúc: <input type="date" id="endDate">
             </div>
-            <button id="queryByNameAndDateButton" class="button secondary-button">Truy Vấn Học Sinh Theo Tên Và Ngày</button>
+            <button id="queryByNameAndDateButton">Truy Vấn Học Sinh Theo Tên Và Ngày</button>
         </div>
 
-        <!-- Truy Vấn Điểm Danh Theo Giờ -->
         <div class="section">
             <h2>Truy Vấn Điểm Danh Theo Giờ</h2>
             <div>
@@ -68,11 +64,10 @@
                 Giờ Bắt Đầu: <input type="time" id="startTime">
                 Giờ Kết Thúc: <input type="time" id="endTime">
             </div>
-            <button id="queryByTimeButton" class="button secondary-button">Truy Vấn Theo Giờ</button>
+            <button id="queryByTimeButton">Truy Vấn Theo Giờ</button>
         </div>
 
-        <div id="attendanceResult" class="result-container"></div>
+        <div id="attendanceResult"></div>
     </div>
 </body>
-
 </html>
