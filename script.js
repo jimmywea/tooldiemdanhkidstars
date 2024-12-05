@@ -2,25 +2,10 @@ import { db } from "./firebase-config.js";
 import { collection, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 import XLSX from "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx.mjs";
 
-const queryButton = document.getElementById("queryButton");
-const exportButton = document.getElementById("exportButton");
-
-async function fetchAttendanceData(name, startDate, endDate) {
-    const q = query(
-        collection(db, "attendance"),
-        where("name", "==", name),
-        where("date", ">=", Timestamp.fromDate(new Date(startDate))),
-        where("date", "<=", Timestamp.fromDate(new Date(endDate)))
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => doc.data());
-}
-
-queryButton.addEventListener("click", async () => {
+document.getElementById("queryButton").addEventListener("click", async () => {
     const name = document.getElementById("queryStudentName").value.trim().toLowerCase();
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
-
     const loadingIndicator = document.getElementById("loadingIndicator");
     const noDataMessage = document.getElementById("noDataMessage");
     const tableBody = document.getElementById("resultTable");
@@ -30,52 +15,66 @@ queryButton.addEventListener("click", async () => {
     tableBody.innerHTML = "";
 
     try {
-        const data = await fetchAttendanceData(name, startDate, endDate);
-        if (data.length === 0) {
+        const q = query(
+            collection(db, "attendance"),
+            where("name", "==", name),
+            where("date", ">=", Timestamp.fromDate(new Date(startDate))),
+            where("date", "<=", Timestamp.fromDate(new Date(endDate)))
+        );
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
             noDataMessage.style.display = "block";
         } else {
-            data.forEach(record => {
-                const row = document.createElement("tr");
-                const attendanceDate = record.date.toDate();
-                row.innerHTML = `
-                    <td>${record.name}</td>
-                    <td>${attendanceDate.toLocaleDateString()}</td>
-                    <td>${attendanceDate.toLocaleTimeString()}</td>
-                    <td>${record.classes.join(", ")}</td>
-                    <td>${record.status || "Không rõ"}</td>
+            snapshot.docs.forEach(doc => {
+                const data = doc.data();
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${data.name}</td>
+                    <td>${data.date.toDate().toLocaleDateString()}</td>
+                    <td>${data.date.toDate().toLocaleTimeString()}</td>
+                    <td>${data.classes.join(", ")}</td>
+                    <td>${data.status || "Không rõ"}</td>
                 `;
-                tableBody.appendChild(row);
+                tableBody.appendChild(tr);
             });
         }
     } catch (error) {
-        console.error("Error fetching data:", error);
-        alert("Lỗi khi truy vấn dữ liệu.");
+        console.error("Error querying attendance:", error);
+        alert("Đã xảy ra lỗi khi truy vấn dữ liệu.");
     } finally {
         loadingIndicator.style.display = "none";
     }
 });
 
-exportButton.addEventListener("click", async () => {
+document.getElementById("exportButton").addEventListener("click", async () => {
     const name = document.getElementById("queryStudentName").value.trim().toLowerCase();
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
 
     try {
-        const data = await fetchAttendanceData(name, startDate, endDate);
-        if (data.length === 0) {
+        const q = query(
+            collection(db, "attendance"),
+            where("name", "==", name),
+            where("date", ">=", Timestamp.fromDate(new Date(startDate))),
+            where("date", "<=", Timestamp.fromDate(new Date(endDate)))
+        );
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
             alert("Không có dữ liệu để xuất!");
             return;
         }
 
-        const formattedData = data.map(record => ({
-            "Tên Học Sinh": record.name,
-            "Ngày": record.date.toDate().toLocaleDateString(),
-            "Giờ": record.date.toDate().toLocaleTimeString(),
-            "Môn Học": record.classes.join(", "),
-            "Trạng Thái": record.status || "Không rõ"
+        const data = snapshot.docs.map(doc => ({
+            "Tên Học Sinh": doc.data().name,
+            "Ngày": doc.data().date.toDate().toLocaleDateString(),
+            "Giờ": doc.data().date.toDate().toLocaleTimeString(),
+            "Môn Học": doc.data().classes.join(", "),
+            "Trạng Thái": doc.data().status || "Không rõ"
         }));
 
-        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+        const worksheet = XLSX.utils.json_to_sheet(data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
         XLSX.writeFile(workbook, "attendance.xlsx");
