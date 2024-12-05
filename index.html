@@ -3,107 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Điểm Danh Học Sinh</title>
+    <title>Công Cụ Điểm Danh Học Sinh</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="firebase-config.js" defer></script>
     <script type="module" src="script.js" defer></script>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <h1>Quản Lý Điểm Danh Học Sinh</h1>
-        </header>
+    <div class="container">
+        <h1>Công Cụ Điểm Danh Học Sinh</h1>
 
-        <nav class="app-menu">
-            <button id="addStudentTab" class="menu-item active">Thêm Học Sinh</button>
-            <button id="markAttendanceTab" class="menu-item">Điểm Danh</button>
-            <button id="queryAttendanceTab" class="menu-item">Truy Vấn Lịch Sử</button>
-        </nav>
+        <div class="section">
+            <h2>Thêm Học Sinh Mới</h2>
+            <input type="text" id="newStudentName" placeholder="Nhập tên học sinh">
+            <div id="classesSelection">
+                <label><input type="checkbox" value="Piano"> Piano</label>
+                <label><input type="checkbox" value="Guitar"> Guitar</label>
+                <label><input type="checkbox" value="Nhảy"> Nhảy</label>
+                <label><input type="checkbox" value="Thanh Nhạc"> Thanh Nhạc</label>
+                <label><input type="checkbox" value="Vẽ"> Vẽ</label>
+                <label><input type="checkbox" value="MC"> MC</label>
+            </div>
+            <button id="addStudentButton">Thêm Học Sinh</button>
+        </div>
 
-        <main class="app-content">
-            <!-- Thêm học sinh -->
-            <section id="addStudentSection" class="section active">
-                <h2>Thêm Học Sinh Mới</h2>
-                <div class="form-group">
-                    <label for="studentName">Tên Học Sinh</label>
-                    <input type="text" id="studentName" placeholder="Nhập tên học sinh">
-                </div>
-                <div class="form-group">
-                    <label for="studentClasses">Chọn Lớp</label>
-                    <select id="studentClasses" multiple>
-                        <option value="Piano">Piano</option>
-                        <option value="Guitar">Guitar</option>
-                        <option value="Nhảy">Nhảy</option>
-                        <option value="Thanh Nhạc">Thanh Nhạc</option>
-                        <option value="Vẽ">Vẽ</option>
-                        <option value="MC">MC</option>
-                    </select>
-                </div>
-                <button id="addStudentButton" class="btn primary">Thêm Học Sinh</button>
-            </section>
+        <div class="section">
+            <h2>Điểm Danh Học Sinh</h2>
+            <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
+            <div id="suggestionsListAttendance" class="suggestions-list"></div>
+            <div id="classesAttendanceSelection">
+                <label><input type="checkbox" value="Piano"> Piano</label>
+                <label><input type="checkbox" value="Guitar"> Guitar</label>
+                <label><input type="checkbox" value="Nhảy"> Nhảy</label>
+                <label><input type="checkbox" value="Thanh Nhạc"> Thanh Nhạc</label>
+                <label><input type="checkbox" value="Vẽ"> Vẽ</label>
+                <label><input type="checkbox" value="MC"> MC</label>
+            </div>
+            <div>
+                Ngày Điểm Danh: <input type="date" id="attendanceDate">
+                Giờ Điểm Danh: <input type="time" id="attendanceTime">
+            </div>
+            <button id="markAttendanceButton">Điểm Danh</button>
+        </div>
 
-            <!-- Điểm danh học sinh -->
-            <section id="markAttendanceSection" class="section">
-                <h2>Điểm Danh Học Sinh</h2>
-                <div class="form-group">
-                    <label for="attendanceStudentName">Tên Học Sinh</label>
-                    <input type="text" id="attendanceStudentName" placeholder="Nhập tên học sinh để điểm danh">
-                </div>
-                <div class="form-group">
-                    <label for="attendanceClasses">Chọn Lớp</label>
-                    <select id="attendanceClasses" multiple>
-                        <option value="Piano">Piano</option>
-                        <option value="Guitar">Guitar</option>
-                        <option value="Nhảy">Nhảy</option>
-                        <option value="Thanh Nhạc">Thanh Nhạc</option>
-                        <option value="Vẽ">Vẽ</option>
-                        <option value="MC">MC</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="attendanceDate">Ngày Điểm Danh</label>
-                    <input type="date" id="attendanceDate">
-                </div>
-                <button id="markAttendanceButton" class="btn primary">Điểm Danh</button>
-            </section>
+        <div class="section">
+            <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
+            <input type="text" id="queryStudentName" placeholder="Tìm kiếm tên học sinh">
+            <div id="suggestionsListQuery" class="suggestions-list"></div>
+            <div>
+                Ngày Bắt Đầu: <input type="date" id="startDate">
+                Ngày Kết Thúc: <input type="date" id="endDate">
+            </div>
+            <button id="queryByNameAndDateButton">Truy Vấn Học Sinh Theo Tên Và Ngày</button>
+        </div>
 
-            <!-- Truy vấn lịch sử điểm danh -->
-            <section id="queryAttendanceSection" class="section">
-                <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
-                <div class="form-group">
-                    <label for="queryStudentName">Tên Học Sinh</label>
-                    <input type="text" id="queryStudentName" placeholder="Nhập tên học sinh">
-                </div>
-                <div class="form-group">
-                    <label for="startDate">Ngày Bắt Đầu</label>
-                    <input type="date" id="startDate">
-                </div>
-                <div class="form-group">
-                    <label for="endDate">Ngày Kết Thúc</label>
-                    <input type="date" id="endDate">
-                </div>
-                <button id="queryAttendanceButton" class="btn primary">Truy Vấn</button>
+        <div class="section">
+            <h2>Truy Vấn Điểm Danh Theo Giờ</h2>
+            <div>
+                Ngày Bắt Đầu: <input type="date" id="timeStartDate">
+                Ngày Kết Thúc: <input type="date" id="timeEndDate">
+                Giờ Bắt Đầu: <input type="time" id="startTime">
+                Giờ Kết Thúc: <input type="time" id="endTime">
+            </div>
+            <button id="queryByTimeButton">Truy Vấn Theo Giờ</button>
+        </div>
 
-                <div id="loadingIndicator" class="loading" style="display: none;">Đang tải dữ liệu...</div>
-                <div id="noDataMessage" class="no-data" style="display: none;">Không tìm thấy dữ liệu phù hợp.</div>
-                <div id="resultContainer" class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tên Học Sinh</th>
-                                <th>Ngày</th>
-                                <th>Giờ</th>
-                                <th>Môn Học</th>
-                                <th>Trạng Thái</th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultTable">
-                            <!-- Dữ liệu sẽ được thêm vào đây -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+        <div id="attendanceResult"></div>
     </div>
 </body>
 </html>
