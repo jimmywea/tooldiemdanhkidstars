@@ -1,8 +1,44 @@
 import { db } from "./firebase-config.js";
-import { collection, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-import XLSX from "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx.mjs";
+import { collection, getDocs, query, where, Timestamp, startAfter, limit } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-// Truy vấn học sinh theo tên và ngày
+// Hàm truy vấn toàn bộ dữ liệu theo thời gian
+async function fetchAllDataByTime(name, startDate, endDate) {
+    const batchLimit = 500; // Số lượng tối đa bản ghi mỗi batch
+    let results = [];
+    let lastVisible = null;
+
+    // Vòng lặp để lấy dữ liệu theo batch
+    while (true) {
+        const q = lastVisible
+            ? query(
+                collection(db, "attendance"),
+                where("name", "==", name),
+                where("date", ">=", Timestamp.fromDate(new Date(startDate))),
+                where("date", "<=", Timestamp.fromDate(new Date(endDate))),
+                startAfter(lastVisible),
+                limit(batchLimit)
+              )
+            : query(
+                collection(db, "attendance"),
+                where("name", "==", name),
+                where("date", ">=", Timestamp.fromDate(new Date(startDate))),
+                where("date", "<=", Timestamp.fromDate(new Date(endDate))),
+                limit(batchLimit)
+              );
+
+        const snapshot = await getDocs(q);
+        if (snapshot.empty) {
+            break; // Nếu không có dữ liệu mới, kết thúc vòng lặp
+        }
+
+        snapshot.docs.forEach(doc => results.push(doc.data()));
+        lastVisible = snapshot.docs[snapshot.docs.length - 1]; // Cập nhật bản ghi cuối cùng
+    }
+
+    return results; // Trả về toàn bộ kết quả
+}
+
+// Truy vấn và hiển thị dữ liệu
 document.getElementById("queryByNameAndDateButton").addEventListener("click", async () => {
     const name = document.getElementById("queryStudentName").value.trim().toLowerCase();
     const startDate = document.getElementById("startDate").value;
@@ -16,27 +52,20 @@ document.getElementById("queryByNameAndDateButton").addEventListener("click", as
     tableBody.innerHTML = "";
 
     try {
-        const q = query(
-            collection(db, "attendance"),
-            where("name", "==", name),
-            where("date", ">=", Timestamp.fromDate(new Date(startDate))),
-            where("date", "<=", Timestamp.fromDate(new Date(endDate)))
-        );
-        const snapshot = await getDocs(q);
+        const data = await fetchAllDataByTime(name, startDate, endDate);
 
-        if (snapshot.empty) {
+        if (data.length === 0) {
             noDataMessage.style.display = "block";
         } else {
-            snapshot.docs.forEach(doc => {
-                const data = doc.data();
+            data.forEach(record => {
                 const tr = document.createElement("tr");
-                const attendanceDate = data.date.toDate();
+                const attendanceDate = record.date.toDate();
                 tr.innerHTML = `
-                    <td>${data.name}</td>
+                    <td>${record.name}</td>
                     <td>${attendanceDate.toLocaleDateString()}</td>
                     <td>${attendanceDate.toLocaleTimeString()}</td>
-                    <td>${data.classes.join(", ")}</td>
-                    <td>${data.status || "Không rõ"}</td>
+                    <td>${record.classes.join(", ")}</td>
+                    <td>${record.status || "Không rõ"}</td>
                 `;
                 tableBody.appendChild(tr);
             });
@@ -46,32 +75,5 @@ document.getElementById("queryByNameAndDateButton").addEventListener("click", as
         alert("Đã xảy ra lỗi khi truy vấn dữ liệu.");
     } finally {
         loadingIndicator.style.display = "none";
-    }
-});
-
-// Xuất file Excel
-document.getElementById("exportButton").addEventListener("click", async () => {
-    try {
-        const snapshot = await getDocs(collection(db, "attendance"));
-        if (snapshot.empty) {
-            alert("Không có dữ liệu để xuất!");
-            return;
-        }
-
-        const data = snapshot.docs.map(doc => ({
-            "Tên Học Sinh": doc.data().name,
-            "Ngày": doc.data().date.toDate().toLocaleDateString(),
-            "Giờ": doc.data().date.toDate().toLocaleTimeString(),
-            "Môn Học": doc.data().classes.join(", "),
-            "Trạng Thái": doc.data().status || "Không rõ"
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
-        XLSX.writeFile(workbook, "attendance.xlsx");
-    } catch (error) {
-        console.error("Error exporting to Excel:", error);
-        alert("Lỗi khi xuất file. Vui lòng thử lại.");
     }
 });
