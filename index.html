@@ -10,29 +10,33 @@
 </head>
 <body>
     <div class="container">
-        <h1>Hệ Thống Quản Lý Điểm Danh</h1>
+        <header>
+            <h1>Quản Lý Điểm Danh</h1>
+        </header>
 
         <!-- Truy vấn học sinh -->
         <div class="section">
             <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
-            <input type="text" id="queryStudentName" placeholder="Nhập tên học sinh" />
+            <input type="text" id="queryStudentName" placeholder="Nhập tên học sinh">
             <div class="date-range">
-                <div>
-                    Ngày Bắt Đầu: <input type="date" id="startDate" />
-                </div>
-                <div>
-                    Ngày Kết Thúc: <input type="date" id="endDate" />
-                </div>
+                <label>
+                    Ngày Bắt Đầu:
+                    <input type="date" id="startDate">
+                </label>
+                <label>
+                    Ngày Kết Thúc:
+                    <input type="date" id="endDate">
+                </label>
             </div>
-            <button id="queryButton" class="btn btn-primary">Truy Vấn</button>
+            <button id="queryButton" class="btn">Truy Vấn</button>
         </div>
 
         <!-- Kết quả truy vấn -->
         <div class="section">
-            <h2>Kết Quả Truy Vấn</h2>
+            <h2>Kết Quả</h2>
             <div id="loadingIndicator" class="loading" style="display: none;">Đang tải dữ liệu...</div>
-            <div id="noDataMessage" class="no-data" style="display: none;">Không tìm thấy dữ liệu phù hợp.</div>
-            <div id="resultContainer">
+            <div id="noDataMessage" class="no-data" style="display: none;">Không tìm thấy dữ liệu.</div>
+            <div id="resultContainer" class="table-responsive">
                 <table>
                     <thead>
                         <tr>
