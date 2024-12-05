@@ -2,10 +2,24 @@ import { db } from "./firebase-config.js";
 import { collection, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 import XLSX from "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx.mjs";
 
-document.getElementById("queryButton").addEventListener("click", async () => {
+// Thay đổi giao diện khi chuyển tab
+document.querySelectorAll(".menu-item").forEach(item => {
+    item.addEventListener("click", () => {
+        document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("active"));
+        document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
+
+        item.classList.add("active");
+        const sectionId = item.id.replace("Button", "Section");
+        document.getElementById(sectionId).classList.add("active");
+    });
+});
+
+// Truy vấn dữ liệu
+document.getElementById("runQueryButton").addEventListener("click", async () => {
     const name = document.getElementById("queryStudentName").value.trim().toLowerCase();
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
+
     const loadingIndicator = document.getElementById("loadingIndicator");
     const noDataMessage = document.getElementById("noDataMessage");
     const tableBody = document.getElementById("resultTable");
@@ -28,26 +42,26 @@ document.getElementById("queryButton").addEventListener("click", async () => {
         } else {
             snapshot.docs.forEach(doc => {
                 const data = doc.data();
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
+                const row = document.createElement("tr");
+                row.innerHTML = `
                     <td>${data.name}</td>
                     <td>${data.date.toDate().toLocaleDateString()}</td>
                     <td>${data.date.toDate().toLocaleTimeString()}</td>
                     <td>${data.classes.join(", ")}</td>
                     <td>${data.status || "Không rõ"}</td>
                 `;
-                tableBody.appendChild(tr);
+                tableBody.appendChild(row);
             });
         }
     } catch (error) {
-        console.error("Error querying attendance:", error);
-        alert("Đã xảy ra lỗi khi truy vấn dữ liệu.");
+        alert("Có lỗi xảy ra khi truy vấn.");
     } finally {
         loadingIndicator.style.display = "none";
     }
 });
 
-document.getElementById("exportButton").addEventListener("click", async () => {
+// Xuất dữ liệu ra Excel
+document.getElementById("runExportButton").addEventListener("click", async () => {
     const name = document.getElementById("queryStudentName").value.trim().toLowerCase();
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
@@ -79,7 +93,6 @@ document.getElementById("exportButton").addEventListener("click", async () => {
         XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
         XLSX.writeFile(workbook, "attendance.xlsx");
     } catch (error) {
-        console.error("Error exporting to Excel:", error);
-        alert("Lỗi khi xuất file.");
+        alert("Có lỗi xảy ra khi xuất file.");
     }
 });
