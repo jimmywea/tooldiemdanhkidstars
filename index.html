@@ -47,10 +47,31 @@
             <button id="markAttendanceButton">Điểm Danh</button>
         </div>
 
+        <!-- Truy vấn kết quả -->
+        <div class="section">
+            <h2>Truy Vấn Kết Quả</h2>
+            <input type="text" id="queryStudentName" placeholder="Nhập tên học sinh để truy vấn">
+            <div id="attendanceResult">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tên Học Sinh</th>
+                            <th>Thời Gian</th>
+                            <th>Môn Học</th>
+                            <th>Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu sẽ được thêm vào bằng JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Xuất file Excel -->
         <div class="section">
-            <h2>Xuất File Điểm Danh</h2>
-            <button id="exportButton">Xuất File Excel</button>
+            <h2>Xuất File Excel</h2>
+            <button id="exportButton">Xuất ra Excel</button>
         </div>
     </div>
 </body>
