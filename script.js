@@ -1,53 +1,65 @@
 import { db } from "./firebase-config.js";
-import { collection, addDoc, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+import { collection, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 import XLSX from "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx.mjs";
 
-async function addStudent() {
-    const name = document.getElementById("newStudentName").value;
-    const classes = Array.from(document.querySelectorAll("#classesSelection input:checked")).map(el => el.value);
+document.getElementById("queryByNameAndDateButton").addEventListener("click", async () => {
+    const name = document.getElementById("queryStudentName").value.trim().toLowerCase();
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const loadingIndicator = document.getElementById("loadingIndicator");
+    const noDataMessage = document.getElementById("noDataMessage");
+    const tableBody = document.getElementById("attendanceResult");
 
-    if (name && classes.length > 0) {
-        try {
-            await addDoc(collection(db, "students"), { name, classes });
-            alert("Học sinh đã được thêm thành công!");
-        } catch (error) {
-            console.error("Error adding student:", error);
-        }
-    } else {
-        alert("Vui lòng nhập tên và chọn ít nhất một lớp.");
-    }
-}
+    loadingIndicator.style.display = "block";
+    noDataMessage.style.display = "none";
+    tableBody.innerHTML = "";
 
-async function markAttendance() {
-    const name = document.getElementById("attendanceStudentName").value;
-    const date = document.getElementById("attendanceDate").value;
-    const time = document.getElementById("attendanceTime").value;
-    const classes = Array.from(document.querySelectorAll("#classesAttendanceSelection input:checked")).map(el => el.value);
+    try {
+        const q = query(
+            collection(db, "attendance"),
+            where("name", "==", name),
+            where("date", ">=", Timestamp.fromDate(new Date(startDate))),
+            where("date", "<=", Timestamp.fromDate(new Date(endDate)))
+        );
+        const snapshot = await getDocs(q);
 
-    if (name && date && time && classes.length > 0) {
-        try {
-            await addDoc(collection(db, "attendance"), {
-                name,
-                date: Timestamp.fromDate(new Date(`${date}T${time}`)),
-                classes
+        if (snapshot.empty) {
+            noDataMessage.style.display = "block";
+        } else {
+            snapshot.docs.forEach(doc => {
+                const data = doc.data();
+                const tr = document.createElement("tr");
+                const attendanceDate = data.date.toDate();
+                tr.innerHTML = `
+                    <td>${data.name}</td>
+                    <td>${attendanceDate.toLocaleDateString()}</td>
+                    <td>${attendanceDate.toLocaleTimeString()}</td>
+                    <td>${data.classes.join(", ")}</td>
+                `;
+                tableBody.appendChild(tr);
             });
-            alert("Điểm danh thành công!");
-        } catch (error) {
-            console.error("Error marking attendance:", error);
         }
-    } else {
-        alert("Vui lòng nhập đầy đủ thông tin.");
+    } catch (error) {
+        console.error("Error querying attendance:", error);
+        alert("Đã xảy ra lỗi khi truy vấn dữ liệu.");
+    } finally {
+        loadingIndicator.style.display = "none";
     }
-}
+});
 
-async function exportToExcel() {
+document.getElementById("exportButton").addEventListener("click", async () => {
     try {
         const snapshot = await getDocs(collection(db, "attendance"));
+        if (snapshot.empty) {
+            alert("Không có dữ liệu để xuất!");
+            return;
+        }
+
         const data = snapshot.docs.map(doc => ({
             "Tên Học Sinh": doc.data().name,
-            "Thời Gian": doc.data().date.toDate().toLocaleString(),
-            "Môn Học": doc.data().classes.join(", "),
-            "Trạng Thái": doc.data().status || "Không rõ"
+            "Ngày": doc.data().date.toDate().toLocaleDateString(),
+            "Giờ": doc.data().date.toDate().toLocaleTimeString(),
+            "Môn Học": doc.data().classes.join(", ")
         }));
 
         const worksheet = XLSX.utils.json_to_sheet(data);
@@ -56,9 +68,6 @@ async function exportToExcel() {
         XLSX.writeFile(workbook, "attendance.xlsx");
     } catch (error) {
         console.error("Error exporting to Excel:", error);
+        alert("Lỗi khi xuất file. Vui lòng thử lại.");
     }
-}
-
-document.getElementById("addStudentButton").addEventListener("click", addStudent);
-document.getElementById("markAttendanceButton").addEventListener("click", markAttendance);
-document.getElementById("exportButton").addEventListener("click", exportToExcel);
+});
