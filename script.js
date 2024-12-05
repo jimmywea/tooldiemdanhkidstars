@@ -2,6 +2,7 @@ import { db } from "./firebase-config.js";
 import { collection, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 import XLSX from "https://cdn.sheetjs.com/xlsx-0.18.10/xlsx.mjs";
 
+// Truy vấn học sinh theo tên và ngày
 document.getElementById("queryByNameAndDateButton").addEventListener("click", async () => {
     const name = document.getElementById("queryStudentName").value.trim().toLowerCase();
     const startDate = document.getElementById("startDate").value;
@@ -35,6 +36,7 @@ document.getElementById("queryByNameAndDateButton").addEventListener("click", as
                     <td>${attendanceDate.toLocaleDateString()}</td>
                     <td>${attendanceDate.toLocaleTimeString()}</td>
                     <td>${data.classes.join(", ")}</td>
+                    <td>${data.status || "Không rõ"}</td>
                 `;
                 tableBody.appendChild(tr);
             });
@@ -47,6 +49,7 @@ document.getElementById("queryByNameAndDateButton").addEventListener("click", as
     }
 });
 
+// Xuất file Excel
 document.getElementById("exportButton").addEventListener("click", async () => {
     try {
         const snapshot = await getDocs(collection(db, "attendance"));
@@ -59,7 +62,8 @@ document.getElementById("exportButton").addEventListener("click", async () => {
             "Tên Học Sinh": doc.data().name,
             "Ngày": doc.data().date.toDate().toLocaleDateString(),
             "Giờ": doc.data().date.toDate().toLocaleTimeString(),
-            "Môn Học": doc.data().classes.join(", ")
+            "Môn Học": doc.data().classes.join(", "),
+            "Trạng Thái": doc.data().status || "Không rõ"
         }));
 
         const worksheet = XLSX.utils.json_to_sheet(data);
