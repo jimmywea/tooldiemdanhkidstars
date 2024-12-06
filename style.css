@@ -1,75 +1,63 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
-}
-
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1, h2 {
-    text-align: center;
+    background-color: #f7f7f7;
     color: #333;
 }
 
-.section {
+#container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #007bff;
+    text-align: center;
+}
+
+h2 {
+    color: #007bff;
+    margin-top: 20px;
+}
+
+.input-field {
     margin-bottom: 20px;
 }
 
-input[type="text"], input[type="date"], input[type="time"] {
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input[type="text"], input[type="date"] {
     width: 100%;
     padding: 8px;
-    margin: 5px 0;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+    margin-top: 5px;
+    box-sizing: border-box;
 }
 
 button {
-    width: 100%;
-    padding: 10px;
     background-color: #007bff;
     color: white;
+    padding: 10px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
+    margin-top: 10px;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-.suggestions-list {
-    border: 1px solid #ccc;
-    background: white;
-    max-height: 150px;
-    overflow-y: auto;
-    position: absolute;
-    z-index: 1000;
-    width: 100%;
+#newStudentCourses, #courseSelect {
+    margin-top: 10px;
 }
 
-.suggestions-list div {
-    padding: 8px;
-    cursor: pointer;
-}
-
-.suggestions-list div:hover {
-    background-color: #f0f0f0;
-}
-
-@media (max-width: 600px) {
-    .container {
-        padding: 10px;
-    }
-
-    button {
-        padding: 8px;
-    }
+#newStudentCourses label, #courseSelect label {
+    display: inline-block;
+    margin-right: 10px;
 }
