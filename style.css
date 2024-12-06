@@ -48,8 +48,11 @@ button:hover {
 .suggestions-list {
     border: 1px solid #ccc;
     background: white;
-    position: relative;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
     z-index: 1000;
+    width: 100%;
 }
 
 .suggestions-list div {
@@ -59,4 +62,14 @@ button:hover {
 
 .suggestions-list div:hover {
     background-color: #f0f0f0;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    button {
+        padding: 8px;
+    }
 }
