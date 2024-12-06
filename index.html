@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Công Cụ Điểm Danh Học Sinh</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="firebase-config.js" defer></script>
@@ -44,30 +45,6 @@
             </div>
             <button id="markAttendanceButton">Điểm Danh</button>
         </div>
-
-        <div class="section">
-            <h2>Truy Vấn Lịch Sử Điểm Danh</h2>
-            <input type="text" id="queryStudentName" placeholder="Tìm kiếm tên học sinh">
-            <div id="suggestionsListQuery" class="suggestions-list"></div>
-            <div>
-                Ngày Bắt Đầu: <input type="date" id="startDate">
-                Ngày Kết Thúc: <input type="date" id="endDate">
-            </div>
-            <button id="queryByNameAndDateButton">Truy Vấn Học Sinh Theo Tên Và Ngày</button>
-        </div>
-
-        <div class="section">
-            <h2>Truy Vấn Điểm Danh Theo Giờ</h2>
-            <div>
-                Ngày Bắt Đầu: <input type="date" id="timeStartDate">
-                Ngày Kết Thúc: <input type="date" id="timeEndDate">
-                Giờ Bắt Đầu: <input type="time" id="startTime">
-                Giờ Kết Thúc: <input type="time" id="endTime">
-            </div>
-            <button id="queryByTimeButton">Truy Vấn Theo Giờ</button>
-        </div>
-
-        <div id="attendanceResult"></div>
     </div>
 </body>
 </html>
