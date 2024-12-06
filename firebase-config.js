@@ -3,7 +3,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.0/firebas
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDL56ekmdndk3wd099KuJWUyogRUa3bwW8",
+    apiKey: "AIzaSyDL56ek****ogRUa3bwW8",
     authDomain: "kidstars-7434d.firebaseapp.com",
     projectId: "kidstars-7434d",
     storageBucket: "kidstars-7434d.appspot.com",
