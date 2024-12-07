@@ -3,18 +3,10 @@ import { collection, addDoc, query, where, getDocs, Timestamp } from "https://ww
 
 // Hàm tiện ích
 const getElement = (id) => document.getElementById(id);
-const getSelectedValues = (selector) => 
+const getSelectedValues = (selector) =>
     Array.from(document.querySelectorAll(selector)).filter(el => el.checked).map(el => el.value);
 
-const debounce = (func, delay) => {
-    let timeout;
-    return (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), delay);
-    };
-};
-
-// Thêm học sinh
+// Thêm học sinh mới
 getElement("addStudentButton").addEventListener("click", async () => {
     const name = getElement("newStudentName").value.trim();
     const classes = getSelectedValues("#classesSelection input");
@@ -47,8 +39,8 @@ getElement("markAttendanceButton").addEventListener("click", async () => {
 });
 
 // Gợi ý tìm kiếm tên học sinh
-getElement("attendanceStudentName").addEventListener("input", debounce(async () => {
-    const queryText = getElement("attendanceStudentName").value.toLowerCase().trim();
+getElement("attendanceStudentName").addEventListener("input", async () => {
+    const queryText = getElement("attendanceStudentName").value.toLowerCase();
     if (queryText.length > 1) {
         const q = query(collection(db, "students"), where("name", ">=", queryText), where("name", "<=", queryText + "\uf8ff"));
         const querySnapshot = await getDocs(q);
@@ -66,4 +58,74 @@ getElement("attendanceStudentName").addEventListener("input", debounce(async () 
             suggestionsList.appendChild(div);
         });
     }
-}, 300));
+});
+
+// Truy vấn học sinh theo tên và ngày
+getElement("queryByNameAndDateButton").addEventListener("click", async () => {
+    const name = getElement("queryStudentName").value.trim();
+    const startDateInput = getElement("startDate").value;
+    const endDateInput = getElement("endDate").value;
+
+    if (name && startDateInput && endDateInput) {
+        const startDate = new Date(startDateInput + "T00:00:00");
+        const endDate = new Date(endDateInput + "T23:59:59");
+
+        const attendanceQuery = query(
+            collection(db, "attendance"),
+            where("name", "==", name),
+            where("date", ">=", Timestamp.fromDate(startDate)),
+            where("date", "<=", Timestamp.fromDate(endDate))
+        );
+
+        const querySnapshot = await getDocs(attendanceQuery);
+        const resultsContainer = getElement("attendanceResult");
+        resultsContainer.innerHTML = "";
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                const div = document.createElement("div");
+                div.textContent = `Tên: ${data.name}, Ngày: ${data.date.toDate().toLocaleString()}`;
+                resultsContainer.appendChild(div);
+            });
+        } else {
+            resultsContainer.textContent = "Không có dữ liệu phù hợp.";
+        }
+    } else {
+        alert("Vui lòng nhập tên học sinh và chọn khoảng ngày.");
+    }
+});
+
+// Truy vấn theo giờ
+getElement("queryByTimeButton").addEventListener("click", async () => {
+    const startDateInput = getElement("timeStartDate").value;
+    const endDateInput = getElement("timeEndDate").value;
+    const startTimeInput = getElement("startTime").value;
+    const endTimeInput = getElement("endTime").value;
+
+    if (startDateInput && endDateInput && startTimeInput && endTimeInput) {
+        const startDateTime = new Date(`${startDateInput}T${startTimeInput}`);
+        const endDateTime = new Date(`${endDateInput}T${endTimeInput}`);
+
+        const attendanceQuery = query(
+            collection(db, "attendance"),
+            where("date", ">=", Timestamp.fromDate(startDateTime)),
+            where("date", "<=", Timestamp.fromDate(endDateTime))
+        );
+
+        const querySnapshot = await getDocs(attendanceQuery);
+        const resultsContainer = getElement("attendanceResult");
+        resultsContainer.innerHTML = "";
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                const div = document.createElement("div");
+                div.textContent = `Tên: ${data.name}, Ngày: ${data.date.toDate().toLocaleString()}`;
+                resultsContainer.appendChild(div);
+            });
+        } else {
+            resultsContainer.textContent = "Không có dữ liệu phù hợp.";
+        }
+    } else {
+        alert("Vui lòng nhập đầy đủ thông tin.");
+    }
+});
